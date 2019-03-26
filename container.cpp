@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <thread>
+#include <mutex>
 
 #include <unistd.h>
 
@@ -26,8 +27,9 @@ namespace judgement {
             std::cout << "Received <" << request << ">" << std::endl;
             if (!request.size())
                 return;
+            std::lock_guard<std::mutex> lock(this->mutex);
             this->push(request);
-            std::thread(&Judge::run, &this->judges.back()).join();
+            this->threads.back().join();
             this->reply(status_message(this->status()), socket);
             this->shift();
         }
@@ -45,9 +47,11 @@ namespace judgement {
         if (str.empty() || str == " ")
             return;
         this->judges.emplace_back(Judge(split(str)));
+        this->threads.emplace_back(std::thread(&Judge::run, &this->judges.back()));
     }
 
     void Container::shift() {
         this->judges.pop_front();
+        this->threads.pop_front();
     }
 }

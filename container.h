@@ -6,6 +6,8 @@
 
 #include <string>
 #include <deque>
+#include <thread>
+#include <mutex>
 
 namespace judgement {
     class Container {
@@ -34,6 +36,8 @@ namespace judgement {
         Container() = default;
 
         std::deque<Judge> judges;
+        std::deque<std::thread> threads;
+        std::mutex mutex;
     };
 }
 
