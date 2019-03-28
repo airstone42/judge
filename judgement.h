@@ -32,10 +32,14 @@ namespace judgement {
         Accepted
     };
 
-    struct input_t {
+    struct judge_t {
         std::string name;
         std::string ext;
         source_t source_type;
+    };
+
+    struct input_t : judge_t {
+        int id = 0;
     };
 
     input_t split(const std::string &input);
