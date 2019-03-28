@@ -4,10 +4,7 @@
 #include "judgement.h"
 #include "judge.h"
 
-#include <string>
-#include <deque>
-#include <thread>
-#include <mutex>
+#include <map>
 
 namespace judgement {
     class Container {
@@ -22,22 +19,16 @@ namespace judgement {
 
         Container &operator=(Container &&) = delete;
 
-        const status_t &status();
+        const status_t &status(int id);
 
         void handle(zmq::context_t &context);
 
-        void reply(const std::string &message, zmq::socket_t &socket);
-
-        void push(const zmq::message_t &request);
-
-        void shift();
+        void run(const zmq::message_t &request, zmq::socket_t &socket);
 
     private:
         Container() = default;
 
-        std::deque<Judge> judges;
-        std::deque<std::thread> threads;
-        std::mutex mutex;
+        std::map<int, Judge> judges;
     };
 }
 
