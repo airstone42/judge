@@ -1,8 +1,10 @@
 /.idea/
 /cmake-build-debug/
 /CMakeFiles/
-/example/*
-!/example/.gitkeep
+/examples/*
+!/examples/.gitkeep
+/tests/*
+!/tests/.gitkeep
 Judgement.cbp
 Client
 cmake_install.cmake
