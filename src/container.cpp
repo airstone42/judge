@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <thread>
-#include <functional>
 #include <string>
+#include <random>
 #include <utility>
 #include <cstring>
 
@@ -28,7 +28,7 @@ namespace judgement {
             std::cout << "Received <" << request << ">" << std::endl;
             if (!request.size())
                 return;
-            std::thread(&Container::run, this, std::cref(request), std::ref(socket)).join();
+            this->run(request, socket);
         }
     }
 
@@ -37,13 +37,20 @@ namespace judgement {
         if (str.empty() || str == " ")
             return;
         input_t input = split(str);
-        this->judges.insert(std::make_pair(input.id, Judge({input.name, input.ext, input.source_type})));
-        this->judges.at(input.id).run();
-        std::string message = status_message(this->status(input.id));
+        int offset = 0;
+        while (this->judges.find(input.id) != this->judges.end()) {
+            std::random_device rd;
+            std::mt19937 mt(rd());
+            std::uniform_int_distribution<> dist(1, 100);
+            offset += dist(mt);
+        }
+        this->judges.insert(std::make_pair(input.id + offset, Judge({input.name, input.ext, input.source_type})));
+        this->judges.at(input.id + offset).run();
+        std::string message = status_message(this->status(input.id + offset));
         std::cout << std::to_string(input.id) + " " + message << std::endl;
         zmq::message_t reply(message.size());
         memcpy(reply.data(), message.data(), message.size());
         socket.send(reply);
-        this->judges.erase(input.id);
+        this->judges.erase(input.id + offset);
     }
 }

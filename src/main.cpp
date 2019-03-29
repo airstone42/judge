@@ -2,6 +2,7 @@
 #include "container.h"
 
 #include <thread>
+#include <iostream>
 #include <functional>
 
 using namespace std;
@@ -15,6 +16,7 @@ int main(int argc, char *argv[]) {
     master.bind(TCP_ADDRESS);
     socket_t worker(context, ZMQ_DEALER);
     worker.bind(INPROC_ADDRESS);
+    std::cout << "Listening..." << std::endl;
     for (int i = 0; i < MAX_WORKERS; i++)
         thread(&Container::handle, ref(container), ref(context)).detach();
     zmq::proxy(master, worker, nullptr);
