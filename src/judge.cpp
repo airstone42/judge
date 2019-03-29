@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <string>
+#include <filesystem>
 #include <fstream>
 
 #include <unistd.h>
@@ -16,12 +17,12 @@ namespace judgement {
     }
 
     void Judge::run() {
-        const std::string filename = this->input.name + "." + this->input.ext;
-        const std::string exec_path = "./" + this->input.name;
-        const std::string in_path = this->input.name + ".in";
-        const std::string out_path = this->input.name + ".out";
-        const std::string err_path = this->input.name + ".err";
-        if (access(filename.c_str(), R_OK)) {
+        const std::filesystem::path filename = this->input.name + "." + this->input.ext;
+        const std::filesystem::path exec_path = "./" + this->input.name;
+        const std::filesystem::path in_path = this->input.name + ".in";
+        const std::filesystem::path out_path = this->input.name + ".out";
+        const std::filesystem::path err_path = this->input.name + ".err";
+        if (!std::filesystem::exists(filename)) {
             this->status = status_t::FileNotFound;
             return;
         }
@@ -30,16 +31,17 @@ namespace judgement {
             return;
         }
         compile(filename, input.name, err_path);
-        if (access(this->input.name.c_str(), R_OK)) {
+        if (!std::filesystem::exists(this->input.name)) {
             this->status = status_t::CompileError;
             return;
         }
         execute(exec_path, out_path, err_path);
         this->status = (!compare(in_path, out_path)) ? status_t::Accepted : status_t::WrongAnswer;
-        remove(exec_path.c_str());
+        std::filesystem::remove(exec_path);
     }
 
-    void Judge::compile(const std::string &filename, const std::string &exec_name, const std::string &err_path) {
+    void Judge::compile(const std::filesystem::path &filename, const std::filesystem::path &exec_name,
+                        const std::filesystem::path &err_path) {
         int *proc_status = nullptr;
         pid_t proc_compile = fork();
         if (!proc_compile) {
@@ -60,7 +62,8 @@ namespace judgement {
         waitpid(proc_compile, proc_status, 0);
     }
 
-    void Judge::execute(const std::string &exec_path, const std::string &out_path, const std::string &err_path) {
+    void Judge::execute(const std::filesystem::path &exec_path, const std::filesystem::path &out_path,
+                        const std::filesystem::path &err_path) {
         int *proc_status = nullptr;
         pid_t proc_execute = fork();
         if (!proc_execute) {
@@ -75,7 +78,7 @@ namespace judgement {
         waitpid(proc_execute, proc_status, 0);
     }
 
-    bool Judge::compare(const std::string &in_path, const std::string &out_path) {
+    bool Judge::compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path) {
         bool flag = false;
         std::ifstream in(in_path);
         std::ifstream out(out_path);

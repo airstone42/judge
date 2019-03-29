@@ -3,7 +3,7 @@
 
 #include "judgement.h"
 
-#include <string>
+#include <filesystem>
 
 namespace judgement {
     class Judge {
@@ -14,11 +14,13 @@ namespace judgement {
 
         void run();
 
-        void compile(const std::string &filename, const std::string &exec_name, const std::string &err_path);
+        void compile(const std::filesystem::path &filename, const std::filesystem::path &exec_name,
+                     const std::filesystem::path &err_path);
 
-        void execute(const std::string &exec_path, const std::string &out_path, const std::string &err_path);
+        void execute(const std::filesystem::path &exec_path, const std::filesystem::path &out_path,
+                     const std::filesystem::path &err_path);
 
-        bool compare(const std::string &in_path, const std::string &out_path);
+        bool compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path);
 
     private:
         input_t input;
