@@ -4,6 +4,7 @@
 #include "judgement.h"
 #include "judge.h"
 
+#include <chrono>
 #include <map>
 
 namespace judgement {
@@ -19,7 +20,11 @@ namespace judgement {
 
         Container &operator=(Container &&) = delete;
 
-        const status_t &status(int id);
+        const status_t &status(int id) const;
+
+        const std::chrono::milliseconds &compiling_time(int id) const;
+
+        const std::chrono::milliseconds &running_time(int id) const;
 
         void handle(zmq::context_t &context);
 

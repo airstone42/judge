@@ -4,6 +4,7 @@
 #include "judgement.h"
 
 #include <filesystem>
+#include <chrono>
 
 namespace judgement {
     class Judge {
@@ -11,6 +12,14 @@ namespace judgement {
         explicit Judge(input_t input, const status_t &status = status_t::Waiting);
 
         const status_t &get_status() const;
+
+        const std::chrono::milliseconds &get_compiling_time() const;
+
+        void set_compiling_time(const std::chrono::milliseconds &time);
+
+        const std::chrono::milliseconds &get_running_time() const;
+
+        void set_running_time(const std::chrono::milliseconds &time);
 
         void run();
 
@@ -25,6 +34,8 @@ namespace judgement {
     private:
         input_t input;
         status_t status;
+        std::chrono::milliseconds compiling_time;
+        std::chrono::milliseconds running_time;
     };
 }
 

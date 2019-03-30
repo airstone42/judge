@@ -75,4 +75,8 @@ namespace judgement {
                 return std::string();
         }
     }
+
+    std::string time_message(const std::chrono::milliseconds &duration) {
+        return std::to_string(duration.count());
+    }
 }

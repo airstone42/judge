@@ -15,8 +15,16 @@ namespace judgement {
         return container;
     }
 
-    const status_t &Container::status(int id) {
+    const status_t &Container::status(int id) const {
         return this->judges.at(id).get_status();
+    }
+
+    const std::chrono::milliseconds &Container::compiling_time(int id) const {
+        return this->judges.at(id).get_compiling_time();
+    }
+
+    const std::chrono::milliseconds &Container::running_time(int id) const {
+        return this->judges.at(id).get_running_time();
     }
 
     void Container::handle(zmq::context_t &context) {
@@ -37,20 +45,23 @@ namespace judgement {
         if (str.empty() || str == " ")
             return;
         input_t input = split(str);
-        int offset = 0;
+        int offset = input.id;
         while (this->judges.find(input.id) != this->judges.end()) {
             std::random_device rd;
             std::mt19937 mt(rd());
             std::uniform_int_distribution<> dist(1, 100);
             offset += dist(mt);
         }
-        this->judges.insert(std::make_pair(input.id + offset, Judge({input.name, input.ext, input.source_type})));
-        this->judges.at(input.id + offset).run();
-        std::string message = status_message(this->status(input.id + offset));
-        std::cout << std::to_string(input.id) + " " + message << std::endl;
+        this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.source_type})));
+        this->judges.at(offset).run();
+        std::string message = std::to_string(input.id) + ":";
+        message += status_message(this->status(offset)) + ":";
+        message += time_message(this->compiling_time(offset)) + "ms:";
+        message += time_message(this->running_time(offset)) + "ms";
+        std::cout << message << std::endl;
         zmq::message_t reply(message.size());
         memcpy(reply.data(), message.data(), message.size());
         socket.send(reply);
-        this->judges.erase(input.id + offset);
+        this->judges.erase(offset);
     }
 }

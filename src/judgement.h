@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <string>
+#include <chrono>
 
 namespace judgement {
     extern const char *const TCP_ADDRESS;
@@ -45,6 +46,8 @@ namespace judgement {
     input_t split(const std::string &input);
 
     std::string status_message(const status_t &status);
+
+    std::string time_message(const std::chrono::milliseconds &duration);
 }
 
 #endif

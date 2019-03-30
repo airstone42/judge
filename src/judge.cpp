@@ -1,6 +1,7 @@
 #include "judge.h"
 
 #include <utility>
+#include <chrono>
 #include <string>
 #include <filesystem>
 #include <fstream>
@@ -10,10 +11,27 @@
 #include <sys/wait.h>
 
 namespace judgement {
-    Judge::Judge(input_t input, const status_t &status) : input(std::move(input)), status(status) {}
+    Judge::Judge(input_t input, const status_t &status) : input(std::move(input)), status(status), compiling_time(0),
+                                                          running_time(0) {}
 
     const status_t &Judge::get_status() const {
         return this->status;
+    }
+
+    const std::chrono::milliseconds &Judge::get_compiling_time() const {
+        return this->compiling_time;
+    }
+
+    void Judge::set_compiling_time(const std::chrono::milliseconds &time) {
+        this->compiling_time = time;
+    }
+
+    const std::chrono::milliseconds &Judge::get_running_time() const {
+        return this->running_time;
+    }
+
+    void Judge::set_running_time(const std::chrono::milliseconds &time) {
+        this->running_time = time;
     }
 
     void Judge::run() {
@@ -42,6 +60,7 @@ namespace judgement {
 
     void Judge::compile(const std::filesystem::path &filename, const std::filesystem::path &exec_name,
                         const std::filesystem::path &err_path) {
+        std::chrono::high_resolution_clock::time_point before = std::chrono::high_resolution_clock::now();
         int *proc_status = nullptr;
         pid_t proc_compile = fork();
         if (!proc_compile) {
@@ -60,10 +79,13 @@ namespace judgement {
             }
         }
         waitpid(proc_compile, proc_status, 0);
+        std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
+        this->set_compiling_time(std::chrono::duration_cast<std::chrono::milliseconds>(after - before));
     }
 
     void Judge::execute(const std::filesystem::path &exec_path, const std::filesystem::path &out_path,
                         const std::filesystem::path &err_path) {
+        std::chrono::high_resolution_clock::time_point before = std::chrono::high_resolution_clock::now();
         int *proc_status = nullptr;
         pid_t proc_execute = fork();
         if (!proc_execute) {
@@ -76,6 +98,8 @@ namespace judgement {
             execlp(exec_path.c_str(), exec_path.c_str(), nullptr);
         }
         waitpid(proc_execute, proc_status, 0);
+        std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
+        this->set_running_time(std::chrono::duration_cast<std::chrono::milliseconds>(after - before));
     }
 
     bool Judge::compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path) {
