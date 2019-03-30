@@ -11,8 +11,9 @@
 #include <sys/wait.h>
 
 namespace judgement {
-    Judge::Judge(input_t input, const status_t &status) : input(std::move(input)), status(status), compiling_time(0),
-                                                          running_time(0) {}
+    Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
+                                                            compiling_time(0),
+                                                            running_time(0) {}
 
     const status_t &Judge::get_status() const {
         return this->status;
@@ -35,21 +36,21 @@ namespace judgement {
     }
 
     void Judge::run() {
-        const std::filesystem::path filename = this->input.name + "." + this->input.ext;
-        const std::filesystem::path exec_path = "./" + this->input.name;
-        const std::filesystem::path in_path = this->input.name + ".in";
-        const std::filesystem::path out_path = this->input.name + ".out";
-        const std::filesystem::path err_path = this->input.name + ".err";
+        const std::filesystem::path filename = this->source.name + "." + this->source.ext;
+        const std::filesystem::path exec_path = "./" + this->source.name;
+        const std::filesystem::path in_path = this->source.name + ".in";
+        const std::filesystem::path out_path = this->source.name + ".out";
+        const std::filesystem::path err_path = this->source.name + ".err";
         if (!std::filesystem::exists(filename)) {
             this->status = status_t::FileNotFound;
             return;
         }
-        if (this->input.source_type == source_t::Other) {
+        if (this->source.ext_type == ext_t::Other) {
             this->status = status_t::SourceTypeError;
             return;
         }
-        compile(filename, input.name, err_path);
-        if (!std::filesystem::exists(this->input.name)) {
+        compile(filename, source.name, err_path);
+        if (!std::filesystem::exists(this->source.name)) {
             this->status = status_t::CompileError;
             return;
         }
@@ -67,11 +68,11 @@ namespace judgement {
             int fd = open(err_path.c_str(), O_RDWR | O_CREAT);
             dup2(fd, 2);
             close(fd);
-            switch (this->input.source_type) {
-                case source_t::CSource:
+            switch (this->source.ext_type) {
+                case ext_t::C:
                     execlp(C_COMPILER, C_COMPILER, filename.c_str(), "-o", exec_name.c_str(), nullptr);
                     break;
-                case source_t::CXXSource:
+                case ext_t::CXX:
                     execlp(CXX_COMPILER, CXX_COMPILER, filename.c_str(), "-o", exec_name.c_str(), nullptr);
                     break;
                 default:

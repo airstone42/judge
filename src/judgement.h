@@ -14,9 +14,9 @@ namespace judgement {
     extern const char *const C_COMPILER;
     extern const char *const CXX_COMPILER;
 
-    enum class source_t : std::uint8_t {
-        CSource,
-        CXXSource,
+    enum class ext_t : std::uint8_t {
+        C,
+        CXX,
         Other
     };
 
@@ -33,13 +33,13 @@ namespace judgement {
         Accepted
     };
 
-    struct judge_t {
+    struct source_t {
         std::string name;
         std::string ext;
-        source_t source_type;
+        ext_t ext_type;
     };
 
-    struct input_t : judge_t {
+    struct input_t : source_t {
         int id = 0;
     };
 

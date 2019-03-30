@@ -52,7 +52,7 @@ namespace judgement {
             std::uniform_int_distribution<> dist(1, 100);
             offset += dist(mt);
         }
-        this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.source_type})));
+        this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.ext_type})));
         this->judges.at(offset).run();
         std::string message = std::to_string(input.id) + ":";
         message += status_message(this->status(offset)) + ":";

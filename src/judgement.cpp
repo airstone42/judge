@@ -13,39 +13,39 @@ namespace judgement {
     input_t split(const std::string &input) {
         std::string delimiter = ":";
         if (input.find(delimiter) == std::string::npos) {
-            return input_t{input, "c", source_t::CSource, 0};
+            return input_t{input, "c", ext_t::C, 0};
         } else if (input.find(delimiter) == input.rfind(delimiter)) {
             try {
                 std::string id = input.substr(0, input.find(delimiter));
                 std::string name = input.substr(input.find(delimiter) + 1, input.size() - input.find(delimiter));
-                return input_t{name, "c", source_t::CSource, std::stoi(id)};
+                return input_t{name, "c", ext_t::C, std::stoi(id)};
             } catch (std::out_of_range &) {
                 std::string name = input.substr(input.find(delimiter) + 1, input.size() - input.find(delimiter));
-                return input_t{name, "c", source_t::CSource, 0};
+                return input_t{name, "c", ext_t::C, 0};
             } catch (std::invalid_argument &) {
                 std::string name = input.substr(0, input.find(delimiter));
                 std::string ext = input.substr(input.find(delimiter) + 1, input.size() - input.find(delimiter));
-                source_t source_type;
+                ext_t ext_type;
                 if (ext == "c")
-                    source_type = source_t::CSource;
+                    ext_type = ext_t::C;
                 else if (ext == "cpp" || ext == "cxx" || ext == "cc")
-                    source_type = source_t::CXXSource;
+                    ext_type = ext_t::CXX;
                 else
-                    source_type = source_t::Other;
-                return input_t{name, ext, source_type, 0};
+                    ext_type = ext_t::Other;
+                return input_t{name, ext, ext_type, 0};
             }
         } else {
             std::string id = input.substr(0, input.find(delimiter));
             std::string name = input.substr(input.find(delimiter) + 1, input.rfind(delimiter) - input.find(delimiter) - 1);
             std::string ext = input.substr(input.rfind(delimiter) + 1, input.size() - input.rfind(delimiter));
-            source_t source_type;
+            ext_t ext_type;
             if (ext == "c")
-                source_type = source_t::CSource;
+                ext_type = ext_t::C;
             else if (ext == "cpp" || ext == "cxx" || ext == "cc")
-                source_type = source_t::CXXSource;
+                ext_type = ext_t::CXX;
             else
-                source_type = source_t::Other;
-            return input_t{name, ext, source_type, std::stoi(id)};
+                ext_type = ext_t::Other;
+            return input_t{name, ext, ext_type, std::stoi(id)};
         }
     }
 

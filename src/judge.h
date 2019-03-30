@@ -9,7 +9,7 @@
 namespace judgement {
     class Judge {
     public:
-        explicit Judge(input_t input, const status_t &status = status_t::Waiting);
+        explicit Judge(source_t source, const status_t &status = status_t::Waiting);
 
         const status_t &get_status() const;
 
@@ -32,7 +32,7 @@ namespace judgement {
         bool compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path);
 
     private:
-        input_t input;
+        source_t source;
         status_t status;
         std::chrono::milliseconds compiling_time;
         std::chrono::milliseconds running_time;
