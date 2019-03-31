@@ -23,8 +23,8 @@ namespace judgement {
         return this->judges.at(id).get_compiling_time();
     }
 
-    const std::chrono::milliseconds &Container::running_time(int id) const {
-        return this->judges.at(id).get_running_time();
+    const std::chrono::milliseconds &Container::executing_time(int id) const {
+        return this->judges.at(id).get_executing_time();
     }
 
     void Container::handle(zmq::context_t &context) {
@@ -57,7 +57,7 @@ namespace judgement {
         std::string message = std::to_string(input.id) + ":";
         message += status_message(this->status(offset)) + ":";
         message += time_message(this->compiling_time(offset)) + "ms:";
-        message += time_message(this->running_time(offset)) + "ms";
+        message += time_message(this->executing_time(offset)) + "ms";
         std::cout << message << std::endl;
         zmq::message_t reply(message.size());
         memcpy(reply.data(), message.data(), message.size());

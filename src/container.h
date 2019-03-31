@@ -24,7 +24,7 @@ namespace judgement {
 
         const std::chrono::milliseconds &compiling_time(int id) const;
 
-        const std::chrono::milliseconds &running_time(int id) const;
+        const std::chrono::milliseconds &executing_time(int id) const;
 
         void handle(zmq::context_t &context);
 

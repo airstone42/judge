@@ -12,11 +12,32 @@
 
 namespace judgement {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
+                                                            compiling_pid(-1), executing_pid(-1),
                                                             compiling_time(0),
-                                                            running_time(0) {}
+                                                            executing_time(0) {}
+
+    void Judge::set_status(status_t status) {
+        this->status = status;
+    }
 
     const status_t &Judge::get_status() const {
         return this->status;
+    }
+
+    pid_t Judge::get_compiling_pid() const {
+        return compiling_pid;
+    }
+
+    void Judge::set_compiling_pid(pid_t pid) {
+        compiling_pid = pid;
+    }
+
+    pid_t Judge::get_executing_pid() const {
+        return executing_pid;
+    }
+
+    void Judge::set_executing_pid(pid_t pid) {
+        executing_pid = pid;
     }
 
     const std::chrono::milliseconds &Judge::get_compiling_time() const {
@@ -27,12 +48,12 @@ namespace judgement {
         this->compiling_time = time;
     }
 
-    const std::chrono::milliseconds &Judge::get_running_time() const {
-        return this->running_time;
+    const std::chrono::milliseconds &Judge::get_executing_time() const {
+        return this->executing_time;
     }
 
-    void Judge::set_running_time(const std::chrono::milliseconds &time) {
-        this->running_time = time;
+    void Judge::set_executing_time(const std::chrono::milliseconds &time) {
+        this->executing_time = time;
     }
 
     void Judge::run() {
@@ -79,6 +100,7 @@ namespace judgement {
                     exit(0);
             }
         }
+        this->set_compiling_pid(proc_compile);
         waitpid(proc_compile, proc_status, 0);
         std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
         this->set_compiling_time(std::chrono::duration_cast<std::chrono::milliseconds>(after - before));
@@ -98,9 +120,10 @@ namespace judgement {
             close(fd_err);
             execlp(exec_path.c_str(), exec_path.c_str(), nullptr);
         }
+        this->set_executing_pid(proc_execute);
         waitpid(proc_execute, proc_status, 0);
         std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
-        this->set_running_time(std::chrono::duration_cast<std::chrono::milliseconds>(after - before));
+        this->set_executing_time(std::chrono::duration_cast<std::chrono::milliseconds>(after - before));
     }
 
     bool Judge::compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path) {

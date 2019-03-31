@@ -11,6 +11,7 @@ namespace judgement {
     extern const char *const TCP_ADDRESS;
     extern const char *const INPROC_ADDRESS;
     extern const int MAX_WORKERS;
+    extern const int TIME_LIMIT;
     extern const char *const C_COMPILER;
     extern const char *const CXX_COMPILER;
 
