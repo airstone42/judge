@@ -1,9 +1,11 @@
 #include "judge.h"
 
+#include <mutex>
 #include <utility>
 #include <chrono>
 #include <string>
 #include <filesystem>
+#include <csignal>
 #include <fstream>
 
 #include <unistd.h>
@@ -16,44 +18,17 @@ namespace judgement {
                                                             compiling_time(0),
                                                             executing_time(0) {}
 
-    void Judge::set_status(status_t status) {
-        this->status = status;
-    }
 
     const status_t &Judge::get_status() const {
         return this->status;
-    }
-
-    pid_t Judge::get_compiling_pid() const {
-        return compiling_pid;
-    }
-
-    void Judge::set_compiling_pid(pid_t pid) {
-        compiling_pid = pid;
-    }
-
-    pid_t Judge::get_executing_pid() const {
-        return executing_pid;
-    }
-
-    void Judge::set_executing_pid(pid_t pid) {
-        executing_pid = pid;
     }
 
     const std::chrono::milliseconds &Judge::get_compiling_time() const {
         return this->compiling_time;
     }
 
-    void Judge::set_compiling_time(const std::chrono::milliseconds &time) {
-        this->compiling_time = time;
-    }
-
     const std::chrono::milliseconds &Judge::get_executing_time() const {
         return this->executing_time;
-    }
-
-    void Judge::set_executing_time(const std::chrono::milliseconds &time) {
-        this->executing_time = time;
     }
 
     void Judge::run() {
@@ -71,11 +46,13 @@ namespace judgement {
             return;
         }
         compile(filename, source.name, err_path);
-        if (!std::filesystem::exists(this->source.name)) {
+        if (!std::filesystem::exists(this->source.name))
             this->status = status_t::CompileError;
+        if (this->get_status() == status_t::CompileError)
             return;
-        }
         execute(exec_path, out_path, err_path);
+        if (this->get_status() == status_t::LimitExceed || this->get_status() == status_t::RuntimeError)
+            return;
         this->status = (!compare(in_path, out_path)) ? status_t::Accepted : status_t::WrongAnswer;
         std::filesystem::remove(exec_path);
     }
@@ -100,10 +77,15 @@ namespace judgement {
                     exit(0);
             }
         }
-        this->set_compiling_pid(proc_compile);
-        waitpid(proc_compile, proc_status, 0);
+        this->compiling_pid =  proc_compile;
+        sleep(TIME_LIMIT);
+        if (!waitpid(proc_compile, proc_status, WNOHANG)) {
+            kill(proc_compile, SIGKILL);
+            this->status = status_t::CompileError;
+            return;
+        }
         std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
-        this->set_compiling_time(std::chrono::duration_cast<std::chrono::milliseconds>(after - before));
+        this->compiling_time = std::chrono::duration_cast<std::chrono::milliseconds>(after - before);
     }
 
     void Judge::execute(const std::filesystem::path &exec_path, const std::filesystem::path &out_path,
@@ -120,10 +102,15 @@ namespace judgement {
             close(fd_err);
             execlp(exec_path.c_str(), exec_path.c_str(), nullptr);
         }
-        this->set_executing_pid(proc_execute);
-        waitpid(proc_execute, proc_status, 0);
+        this->executing_pid = proc_execute;
+        sleep(TIME_LIMIT);
+        if (!waitpid(proc_execute, proc_status, WNOHANG)) {
+            kill(proc_execute, SIGKILL);
+            this->status = status_t::LimitExceed;
+            return;
+        }
         std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
-        this->set_executing_time(std::chrono::duration_cast<std::chrono::milliseconds>(after - before));
+        this->executing_time = std::chrono::duration_cast<std::chrono::milliseconds>(after - before);
     }
 
     bool Judge::compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path) {
