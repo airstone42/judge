@@ -1,16 +1,15 @@
 #include "judge.h"
 
-#include <mutex>
 #include <utility>
 #include <chrono>
 #include <string>
 #include <filesystem>
-#include <csignal>
 #include <fstream>
 
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
 
 namespace judgement {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
@@ -59,7 +58,6 @@ namespace judgement {
 
     void Judge::compile(const std::filesystem::path &filename, const std::filesystem::path &exec_name,
                         const std::filesystem::path &err_path) {
-        std::chrono::high_resolution_clock::time_point before = std::chrono::high_resolution_clock::now();
         int *proc_status = nullptr;
         pid_t proc_compile = fork();
         if (!proc_compile) {
@@ -77,20 +75,22 @@ namespace judgement {
                     exit(0);
             }
         }
-        this->compiling_pid =  proc_compile;
+        this->compiling_pid = proc_compile;
         sleep(TIME_LIMIT);
         if (!waitpid(proc_compile, proc_status, WNOHANG)) {
             kill(proc_compile, SIGKILL);
             this->status = status_t::CompileError;
             return;
+        } else {
+            rusage usage{};
+            getrusage(RUSAGE_CHILDREN, &usage);
+            this->compiling_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::seconds(usage.ru_utime.tv_sec) + std::chrono::microseconds(usage.ru_utime.tv_usec));
         }
-        std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
-        this->compiling_time = std::chrono::duration_cast<std::chrono::milliseconds>(after - before);
     }
 
     void Judge::execute(const std::filesystem::path &exec_path, const std::filesystem::path &out_path,
                         const std::filesystem::path &err_path) {
-        std::chrono::high_resolution_clock::time_point before = std::chrono::high_resolution_clock::now();
         int *proc_status = nullptr;
         pid_t proc_execute = fork();
         if (!proc_execute) {
@@ -108,9 +108,13 @@ namespace judgement {
             kill(proc_execute, SIGKILL);
             this->status = status_t::LimitExceed;
             return;
+        } else {
+            rusage usage{};
+            getrusage(RUSAGE_CHILDREN, &usage);
+            this->executing_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::seconds(usage.ru_utime.tv_sec) + std::chrono::microseconds(usage.ru_utime.tv_usec) -
+                    this->compiling_time);
         }
-        std::chrono::high_resolution_clock::time_point after = std::chrono::high_resolution_clock::now();
-        this->executing_time = std::chrono::duration_cast<std::chrono::milliseconds>(after - before);
     }
 
     bool Judge::compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path) {
