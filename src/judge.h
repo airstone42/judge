@@ -19,6 +19,8 @@ namespace judgement {
 
         const std::chrono::milliseconds &get_executing_time() const;
 
+        long get_executing_memory() const;
+
         void run();
 
         void compile(const std::filesystem::path &filename, const std::filesystem::path &exec_name,
@@ -36,6 +38,7 @@ namespace judgement {
         pid_t executing_pid;
         std::chrono::milliseconds compiling_time;
         std::chrono::milliseconds executing_time;
+        long executing_memory;
     };
 }
 

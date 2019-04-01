@@ -13,9 +13,8 @@
 
 namespace judgement {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
-                                                            compiling_pid(-1), executing_pid(-1),
-                                                            compiling_time(0),
-                                                            executing_time(0) {}
+                                                            compiling_pid(-1), executing_pid(-1), compiling_time(0),
+                                                            executing_time(0), executing_memory(0) {}
 
 
     const status_t &Judge::get_status() const {
@@ -28,6 +27,10 @@ namespace judgement {
 
     const std::chrono::milliseconds &Judge::get_executing_time() const {
         return this->executing_time;
+    }
+
+    long Judge::get_executing_memory() const {
+        return executing_memory;
     }
 
     void Judge::run() {
@@ -76,14 +79,13 @@ namespace judgement {
             }
         }
         this->compiling_pid = proc_compile;
+        rusage usage{};
         sleep(TIME_LIMIT);
-        if (!waitpid(proc_compile, proc_status, WNOHANG)) {
+        if (!wait4(proc_compile, proc_status, WNOHANG, &usage)) {
             kill(proc_compile, SIGKILL);
             this->status = status_t::CompileError;
             return;
         } else {
-            rusage usage{};
-            getrusage(RUSAGE_CHILDREN, &usage);
             this->compiling_time = std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::seconds(usage.ru_utime.tv_sec) + std::chrono::microseconds(usage.ru_utime.tv_usec));
         }
@@ -103,17 +105,16 @@ namespace judgement {
             execlp(exec_path.c_str(), exec_path.c_str(), nullptr);
         }
         this->executing_pid = proc_execute;
+        rusage usage{};
         sleep(TIME_LIMIT);
-        if (!waitpid(proc_execute, proc_status, WNOHANG)) {
+        if (!wait4(proc_execute, proc_status, WNOHANG, &usage)) {
             kill(proc_execute, SIGKILL);
             this->status = status_t::LimitExceed;
             return;
         } else {
-            rusage usage{};
-            getrusage(RUSAGE_CHILDREN, &usage);
             this->executing_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    std::chrono::seconds(usage.ru_utime.tv_sec) + std::chrono::microseconds(usage.ru_utime.tv_usec) -
-                    this->compiling_time);
+                    std::chrono::seconds(usage.ru_utime.tv_sec) + std::chrono::microseconds(usage.ru_utime.tv_usec));
+            this->executing_memory = usage.ru_maxrss;
         }
     }
 

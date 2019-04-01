@@ -26,6 +26,8 @@ namespace judgement {
 
         const std::chrono::milliseconds &executing_time(int id) const;
 
+        long executing_memory(int id) const;
+
         void handle(zmq::context_t &context);
 
         void run(const zmq::message_t &request, zmq::socket_t &socket);

@@ -27,13 +27,17 @@ namespace judgement {
         return this->judges.at(id).get_executing_time();
     }
 
+    long Container::executing_memory(int id) const {
+        return this->judges.at(id).get_executing_memory();
+    }
+
     void Container::handle(zmq::context_t &context) {
         zmq::socket_t socket(context, ZMQ_REP);
         socket.connect(INPROC_ADDRESS);
         while (true) {
             zmq::message_t request;
             socket.recv(&request);
-            std::cout << "Received <" << request << ">" << std::endl;
+            std::cout << ">> Received <" << request << ">" << std::endl;
             if (!request.size())
                 return;
             this->run(request, socket);
@@ -57,8 +61,9 @@ namespace judgement {
         std::string message = std::to_string(input.id) + ":";
         message += status_message(this->status(offset)) + ":";
         message += time_message(this->compiling_time(offset)) + "ms:";
-        message += time_message(this->executing_time(offset)) + "ms";
-        std::cout << message << std::endl;
+        message += time_message(this->executing_time(offset)) + "ms:";
+        message += std::to_string(this->executing_memory(offset)) + "kB";
+        std::cout << "<< " + message << std::endl;
         zmq::message_t reply(message.size());
         memcpy(reply.data(), message.data(), message.size());
         socket.send(reply);
