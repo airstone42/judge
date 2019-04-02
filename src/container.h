@@ -20,13 +20,13 @@ namespace judgement {
 
         Container &operator=(Container &&) = delete;
 
-        const status_t &status(int id) const;
+        const status_t &status(double id) const;
 
-        const std::chrono::milliseconds &compiling_time(int id) const;
+        const std::chrono::milliseconds &compiling_time(double id) const;
 
-        const std::chrono::milliseconds &executing_time(int id) const;
+        const std::chrono::milliseconds &executing_time(double id) const;
 
-        long executing_memory(int id) const;
+        long executing_memory(double id) const;
 
         void handle(zmq::context_t &context);
 
@@ -35,7 +35,7 @@ namespace judgement {
     private:
         Container() = default;
 
-        std::map<int, Judge> judges;
+        std::map<double, Judge> judges;
     };
 }
 

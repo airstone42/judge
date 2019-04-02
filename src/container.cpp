@@ -15,19 +15,19 @@ namespace judgement {
         return container;
     }
 
-    const status_t &Container::status(int id) const {
+    const status_t &Container::status(double id) const {
         return this->judges.at(id).get_status();
     }
 
-    const std::chrono::milliseconds &Container::compiling_time(int id) const {
+    const std::chrono::milliseconds &Container::compiling_time(double id) const {
         return this->judges.at(id).get_compiling_time();
     }
 
-    const std::chrono::milliseconds &Container::executing_time(int id) const {
+    const std::chrono::milliseconds &Container::executing_time(double id) const {
         return this->judges.at(id).get_executing_time();
     }
 
-    long Container::executing_memory(int id) const {
+    long Container::executing_memory(double id) const {
         return this->judges.at(id).get_executing_memory();
     }
 
@@ -49,13 +49,13 @@ namespace judgement {
         if (str.empty() || str == " ")
             return;
         input_t input = split(str);
-        int offset = input.id;
-        while (this->judges.find(input.id) != this->judges.end()) {
+        double offset = input.id;
+        do {
             std::random_device rd;
             std::mt19937 mt(rd());
-            std::uniform_int_distribution<> dist(1, 100);
+            std::uniform_real_distribution<> dist(0, 1);
             offset += dist(mt);
-        }
+        } while (this->judges.find(input.id) != this->judges.end());
         this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.ext_type})));
         this->judges.at(offset).run();
         std::string message = std::to_string(input.id) + ":";

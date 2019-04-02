@@ -41,7 +41,7 @@ namespace judgement {
     };
 
     struct input_t : source_t {
-        int id = 0;
+        long id = 0;
     };
 
     input_t split(const std::string &input);
