@@ -5,6 +5,7 @@
 #include "judge.h"
 
 #include <chrono>
+#include <mutex>
 #include <map>
 
 namespace judgement {
@@ -35,6 +36,7 @@ namespace judgement {
     private:
         Container() = default;
 
+        std::mutex mutex;
         std::map<double, Judge> judges;
     };
 }

@@ -53,17 +53,17 @@ namespace judgement {
     std::string status_message(const status_t &status) {
         switch (status) {
             case status_t::Waiting:
-                return "Waiting";
+                return "Waiting...";
             case status_t::InputError:
                 return "Input error!";
             case status_t::SourceTypeError:
                 return "Source type error!";
             case status_t::FileNotFound:
                 return "File not found!";
+            case status_t::ExceptionOccurred:
+                return "Exception occurred!";
             case status_t::CompileError:
                 return "Compiling error!";
-            case status_t::Executed:
-                return "Executed!";
             case status_t::RuntimeError:
                 return "Runtime error!";
             case status_t::LimitExceed:
