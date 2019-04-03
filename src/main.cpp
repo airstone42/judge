@@ -19,6 +19,6 @@ int main(int argc, char *argv[]) {
     cout << "Listening..." << endl;
     for (int i = 0; i < MAX_WORKERS; i++)
         thread(&Container::handle, ref(container), ref(context)).detach();
-    zmq::proxy(master, worker, nullptr);
+    zmq::proxy(static_cast<void *>(master), static_cast<void *>(worker), nullptr);
     return 0;
 }

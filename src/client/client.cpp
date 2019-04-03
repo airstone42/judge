@@ -25,9 +25,10 @@ int main() {
 void run(const string &input, socket_t &socket) {
     message_t request(input.size());
     memcpy(request.data(), input.data(), input.size());
-    cout << "Sending: <" << request << ">" << endl;
+    cout << "Sending: <" << string(static_cast<char *>(request.data()), request.size()) << ">" << endl;
     socket.send(request);
     message_t reply;
     socket.recv(&reply);
-    cout << "Result: <" << reply << ">" << endl;
+    cout << "Result: <" << string(static_cast<char *>(reply.data()), reply.size()) << ">" << endl;
 }
+

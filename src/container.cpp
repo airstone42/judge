@@ -39,7 +39,8 @@ namespace judgement {
         while (true) {
             zmq::message_t request;
             socket.recv(&request);
-            std::cout << ">> Received <" << request << ">" << std::endl;
+            std::cout << ">> Received <" << std::string(static_cast<char *>(request.data()), request.size()) << ">"
+                      << std::endl;
             if (!request.size())
                 return;
             this->run(request, socket);
