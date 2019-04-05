@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/resource.h>
+#include <iostream>
 
 namespace judgement {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
@@ -58,7 +59,7 @@ namespace judgement {
         execute(exec_path, result_path, log_path, in_path);
         if (this->get_status() == status_t::LimitExceed || this->get_status() == status_t::RuntimeError)
             goto remove;
-        this->status = (!compare(out_path, result_path)) ? status_t::Accepted : status_t::WrongAnswer;
+        this->status = (compare(out_path, result_path)) ? status_t::Accepted : status_t::WrongAnswer;
         remove:
         std::filesystem::remove(exec_path);
         std::filesystem::remove(result_path);
@@ -136,9 +137,12 @@ namespace judgement {
         std::ifstream out(out_path);
         std::ifstream result(result_path);
         if (out.is_open() && result.is_open()) {
-            std::string line_in, line_out;
-            while (getline(out, line_in) && getline(result, line_out))
-                flag |= line_in.compare(line_out);
+            std::string line_out, line_result;
+            while (getline(out, line_out) && getline(result, line_result)) {
+                if (line_out.empty() || line_result.empty())
+                    continue;
+                flag |= line_out == line_result;
+            }
             out.close();
             result.close();
         }
