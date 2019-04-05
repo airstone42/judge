@@ -3,6 +3,7 @@
 /CMakeFiles/
 /examples/*
 !/examples/test.c
+!/examples/test.cpp
 !/examples/test.in
 !/examples/test.out
 !/examples/jailed.c
