@@ -2,7 +2,9 @@
 /cmake-build-debug/
 /CMakeFiles/
 /examples/*
-!/examples/.gitkeep
+!/examples/test.c
+!/examples/test.in
+!/examples/test.out
 /tests/*
 !/tests/.gitkeep
 Judgement.cbp
