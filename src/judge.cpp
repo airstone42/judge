@@ -3,6 +3,7 @@
 #include <utility>
 #include <chrono>
 #include <string>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 
@@ -34,7 +35,15 @@ namespace judgement {
     }
 
     void Judge::run(double offset) {
-        const std::filesystem::path file_name = this->source.name + "." + this->source.ext;
+        const std::filesystem::path io_name = this->source.name;
+        std::filesystem::path file_name = this->source.name;
+        if (std::floor(offset)) {
+            file_name += "_" + std::to_string((int) std::floor(offset)) + "." + this->source.ext;
+            if (!std::filesystem::exists(file_name))
+                file_name = this->source.name  + "." + this->source.ext;
+        } else {
+            file_name += "." + this->source.ext;
+        }
         const std::filesystem::path exec_name = file_name.parent_path().string() + "/" + std::to_string(offset);
         const std::filesystem::path exec_path = "./" + exec_name.string();
         const std::filesystem::path in_path = this->source.name + ".in";
