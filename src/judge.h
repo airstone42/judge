@@ -21,15 +21,16 @@ namespace judgement {
 
         long get_executing_memory() const;
 
-        void run();
+        void run(double offset);
 
-        void compile(const std::filesystem::path &filename, const std::filesystem::path &exec_name,
-                     const std::filesystem::path &err_path);
+        void compile(const std::filesystem::path &file_name, const std::filesystem::path &exec_name,
+                     const std::filesystem::path &log_path);
 
-        void execute(const std::filesystem::path &exec_path, const std::filesystem::path &out_path,
-                     const std::filesystem::path &err_path);
+        void execute(const std::filesystem::path &exec_path, const std::filesystem::path &result_path,
+                     const std::filesystem::path &log_path,
+                     const std::filesystem::path &in_path = std::filesystem::path());
 
-        bool compare(const std::filesystem::path &in_path, const std::filesystem::path &out_path);
+        bool compare(const std::filesystem::path &out_path, const std::filesystem::path &result_path);
 
     private:
         source_t source;

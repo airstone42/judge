@@ -64,7 +64,7 @@ namespace judgement {
             this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.ext_type})));
         }
         try {
-            this->judges.at(offset).run();
+            this->judges.at(offset).run(offset);
             std::string message = std::to_string(input.id) + ":";
             message += status_message(this->status(offset)) + ":";
             message += time_message(this->compiling_time(offset)) + "ms:";
