@@ -10,6 +10,9 @@ namespace judgement {
     const int TIME_LIMIT = 1;
     const char *const C_COMPILER = "gcc";
     const char *const CXX_COMPILER = "g++";
+    const char *const SECCOMP_SOURCE = "src/rules/rules.c";
+    const char *const DL_LIBRARY = "-ldl";
+    const char *const SECCOMP_LIBRARY = "-lseccomp";
 
     input_t split(const std::string &input) {
         std::string delimiter = ":";

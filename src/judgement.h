@@ -14,6 +14,9 @@ namespace judgement {
     extern const int TIME_LIMIT;
     extern const char *const C_COMPILER;
     extern const char *const CXX_COMPILER;
+    extern const char *const SECCOMP_SOURCE;
+    extern const char *const DL_LIBRARY;
+    extern const char *const SECCOMP_LIBRARY;
 
     enum class ext_t : std::uint8_t {
         C,

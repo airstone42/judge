@@ -75,10 +75,12 @@ namespace judgement {
             close(fd);
             switch (this->source.ext_type) {
                 case ext_t::C:
-                    execlp(C_COMPILER, C_COMPILER, file_name.c_str(), "-o", exec_name.c_str(), nullptr);
+                    execlp(C_COMPILER, C_COMPILER, file_name.c_str(), SECCOMP_SOURCE, DL_LIBRARY, SECCOMP_LIBRARY, "-o",
+                           exec_name.c_str(), nullptr);
                     break;
                 case ext_t::CXX:
-                    execlp(CXX_COMPILER, CXX_COMPILER, file_name.c_str(), "-o", exec_name.c_str(), nullptr);
+                    execlp(CXX_COMPILER, CXX_COMPILER, file_name.c_str(), SECCOMP_SOURCE, DL_LIBRARY, SECCOMP_LIBRARY,
+                           "-o", exec_name.c_str(), nullptr);
                     break;
                 default:
                     exit(0);
