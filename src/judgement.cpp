@@ -49,7 +49,11 @@ namespace judgement {
                 ext_type = ext_t::CXX;
             else
                 ext_type = ext_t::Other;
-            return input_t{name, ext, ext_type, std::stol(id)};
+            try {
+                return input_t{name, ext, ext_type, std::stol(id)};
+            } catch (std::invalid_argument &) {
+                return input_t{name, ext, ext_type, 0};
+            }
         }
     }
 
