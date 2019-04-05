@@ -10,4 +10,3 @@ int main(void) {
     puts("You won't see this line if seccomp works.");
     return 0;
 }
-

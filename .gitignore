@@ -9,10 +9,11 @@
 !/examples/jailed.c
 /tests/*
 !/tests/.gitkeep
-Judgement.cbp
+a.out
 Client
 cmake_install.cmake
 CMakeCache.txt
 Jailed
 Judge
+Judgement.cbp
 Makefile

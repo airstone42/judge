@@ -1,5 +1,9 @@
 #include "rules.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <dlfcn.h>
 
 int __libc_start_main(int *(main)(int, char **, char **),
@@ -31,3 +35,7 @@ void rules(scmp_filter_ctx *ctx) {
     for (int i = 0; i < (int) (sizeof(other_rules) / sizeof(*other_rules)); i++)
         seccomp_rule_add(*ctx, SCMP_ACT_ALLOW, other_rules[i], 0);
 }
+
+#ifdef __cplusplus
+}
+#endif
