@@ -1,0 +1,7 @@
+examples/test
+examples/test:cpp
+examples/test:in
+1:examples/test
+2:examples/test:cpp
+3:examples/test:cxx
+4:examples/test:cc
