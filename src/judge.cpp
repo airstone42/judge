@@ -40,7 +40,7 @@ namespace judgement {
         if (std::floor(offset)) {
             file_name += "_" + std::to_string((int) std::floor(offset)) + "." + this->source.ext;
             if (!std::filesystem::exists(file_name))
-                file_name = this->source.name  + "." + this->source.ext;
+                file_name = this->source.name + "." + this->source.ext;
         } else {
             file_name += "." + this->source.ext;
         }
@@ -145,7 +145,7 @@ namespace judgement {
     bool Judge::compare(const std::filesystem::path &out_path, const std::filesystem::path &result_path) {
         std::ifstream out(out_path);
         std::ifstream result(result_path);
-        if (result.peek() == std::ifstream::traits_type::eof()) {
+        if (result.peek() == std::ifstream::traits_type::eof() && this->status != status_t::LimitExceed) {
             this->status = status_t::RuntimeError;
             return false;
         }
