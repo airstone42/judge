@@ -2,13 +2,13 @@
 
 #include <iostream>
 #include <string>
-#include <thread>
+#include <csignal>
 #include <cstring>
+
+#include <unistd.h>
 
 using namespace std;
 using namespace zmq;
-
-const char *const TCP_ADDRESS = "tcp://localhost:5555";
 
 int main() {
     context_t context(1);
@@ -17,12 +17,23 @@ int main() {
     cout << "Connecting to server…" << endl;
     string input;
     while (getline(cin, input) && !input.empty() && input != " ") {
-        run(input, socket);
+        signal(SIGALRM, alarm_handler);
+        alarm(limit);
+        int result = run(input, socket);
+        if (timeout && result)
+            exit(0);
+        else if (timeout)
+            timeout = 0;
     }
     return 0;
 }
 
-void run(const string &input, socket_t &socket) {
+void alarm_handler(int sig) {
+    if (sig == SIGALRM)
+        timeout = 1;
+}
+
+int run(const string &input, socket_t &socket) {
     message_t request(input.size());
     memcpy(request.data(), input.data(), input.size());
     cout << "Sending: <" << string(static_cast<char *>(request.data()), request.size()) << ">" << endl;
@@ -30,5 +41,5 @@ void run(const string &input, socket_t &socket) {
     message_t reply;
     socket.recv(&reply);
     cout << "Result: <" << string(static_cast<char *>(reply.data()), reply.size()) << ">" << endl;
+    return 0;
 }
-

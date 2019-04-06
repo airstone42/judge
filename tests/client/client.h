@@ -5,8 +5,13 @@
 
 #include <string>
 
-extern const char *const TCP_ADDRESS;
+int timeout = 0;
+int limit = 5;
 
-void run(const std::string &input, zmq::socket_t &socket);
+const char *const TCP_ADDRESS = "tcp://localhost:5555";
+
+void alarm_handler(int sig);
+
+int run(const std::string &input, zmq::socket_t &socket);
 
 #endif
