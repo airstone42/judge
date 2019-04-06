@@ -51,6 +51,7 @@ namespace judgement {
         const std::filesystem::path result_path =
                 file_name.parent_path().string() + "/" + std::to_string(offset) + ".txt";
         const std::filesystem::path log_path = file_name.parent_path().string() + "/" + std::to_string(offset) + ".log";
+        bool compare_result = false;
         if (!std::filesystem::exists(file_name)) {
             this->status = status_t::FileNotFound;
             goto remove;
@@ -65,9 +66,10 @@ namespace judgement {
         if (this->get_status() == status_t::CompileError)
             goto remove;
         execute(exec_path, result_path, log_path, in_path);
+        compare_result = compare(out_path, result_path);
         if (this->get_status() == status_t::LimitExceed || this->get_status() == status_t::RuntimeError)
             goto remove;
-        this->status = (compare(out_path, result_path)) ? status_t::Accepted : status_t::WrongAnswer;
+        this->status = (compare_result) ? status_t::Accepted : status_t::WrongAnswer;
         remove:
         std::filesystem::remove(exec_path);
         std::filesystem::remove(result_path);
@@ -141,9 +143,13 @@ namespace judgement {
     }
 
     bool Judge::compare(const std::filesystem::path &out_path, const std::filesystem::path &result_path) {
-        bool flag = false;
         std::ifstream out(out_path);
         std::ifstream result(result_path);
+        if (result.peek() == std::ifstream::traits_type::eof()) {
+            this->status = status_t::RuntimeError;
+            return false;
+        }
+        bool flag = false;
         if (out.is_open() && result.is_open()) {
             std::string line_out, line_result;
             while (getline(out, line_out) && getline(result, line_result)) {
