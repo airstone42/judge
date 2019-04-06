@@ -1,3 +1,5 @@
+/* Expected: Runtime error! */
+
 #include <thread>
 #include <chrono>
 #include <iostream>

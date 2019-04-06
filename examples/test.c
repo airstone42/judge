@@ -1,3 +1,5 @@
+/* Expected: Accept! */
+
 #include <stdio.h>
 
 int main(void) {

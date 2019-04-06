@@ -1,3 +1,5 @@
+/* Expected: Wrong answer! */
+
 #include <stdio.h>
 
 int main(void) {

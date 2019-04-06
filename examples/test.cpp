@@ -1,3 +1,5 @@
+/* Expected: Accept! */
+
 #include <iostream>
 
 using namespace std;
