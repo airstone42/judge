@@ -2,10 +2,7 @@
 /cmake-build-debug/
 /CMakeFiles/
 /examples/*
-!/examples/test.c
-!/examples/test.cpp
-!/examples/test.in
-!/examples/test.out
+!/examples/test*
 !/examples/jailed.c
 /tests/*
 !/tests/client
