@@ -76,7 +76,7 @@ namespace judgement {
             socket.send(reply);
         } catch (std::out_of_range &) {
             std::string message = std::to_string(input.id) + ":";
-            message += status_message(status_t::ExceptionOccurred) + ":0ms:0ms:0kB";
+            message += status_message(status_t::E) + ":0ms:0ms:0kB";
             std::cout << "<< " + message << std::endl;
             zmq::message_t reply(message.size());
             memcpy(reply.data(), message.data(), message.size());

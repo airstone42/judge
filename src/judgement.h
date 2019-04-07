@@ -25,16 +25,16 @@ namespace judgement {
     };
 
     enum class status_t : std::uint8_t {
-        Waiting,
-        InputError,
-        SourceTypeError,
-        FileNotFound,
-        ExceptionOccurred,
-        CompileError,
-        RuntimeError,
-        LimitExceed,
-        WrongAnswer,
-        Accepted
+        W,
+        IE,
+        TE,
+        NF,
+        E,
+        CE,
+        RE,
+        LE,
+        WA,
+        AC
     };
 
     struct source_t {

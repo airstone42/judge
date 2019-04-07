@@ -53,23 +53,23 @@ namespace judgement {
         const std::filesystem::path log_path = file_name.parent_path().string() + "/" + std::to_string(offset) + ".log";
         bool compare_result = false;
         if (!std::filesystem::exists(file_name)) {
-            this->status = status_t::FileNotFound;
+            this->status = status_t::NF;
             goto remove;
         }
         if (this->source.ext_type == ext_t::Other) {
-            this->status = status_t::SourceTypeError;
+            this->status = status_t::TE;
             goto remove;
         }
         compile(file_name, exec_name, log_path);
         if (!std::filesystem::exists(exec_name))
-            this->status = status_t::CompileError;
-        if (this->get_status() == status_t::CompileError)
+            this->status = status_t::CE;
+        if (this->get_status() == status_t::CE)
             goto remove;
         execute(exec_path, result_path, log_path, in_path);
         compare_result = compare(out_path, result_path);
-        if (this->get_status() == status_t::LimitExceed || this->get_status() == status_t::RuntimeError)
+        if (this->get_status() == status_t::LE || this->get_status() == status_t::RE)
             goto remove;
-        this->status = (compare_result) ? status_t::Accepted : status_t::WrongAnswer;
+        this->status = (compare_result) ? status_t::AC : status_t::WA;
         remove:
         std::filesystem::remove(exec_path);
         std::filesystem::remove(result_path);
@@ -102,7 +102,7 @@ namespace judgement {
         sleep(TIME_LIMIT);
         if (!wait4(proc_compile, proc_status, WNOHANG, &usage)) {
             kill(proc_compile, SIGKILL);
-            this->status = status_t::CompileError;
+            this->status = status_t::CE;
             return;
         } else {
             this->compiling_time = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -133,7 +133,7 @@ namespace judgement {
         sleep(TIME_LIMIT);
         if (!wait4(proc_execute, proc_status, WNOHANG, &usage)) {
             kill(proc_execute, SIGKILL);
-            this->status = status_t::LimitExceed;
+            this->status = status_t::LE;
             return;
         } else {
             this->executing_time = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -145,8 +145,8 @@ namespace judgement {
     bool Judge::compare(const std::filesystem::path &out_path, const std::filesystem::path &result_path) {
         std::ifstream out(out_path);
         std::ifstream result(result_path);
-        if (result.peek() == std::ifstream::traits_type::eof() && this->status != status_t::LimitExceed) {
-            this->status = status_t::RuntimeError;
+        if (result.peek() == std::ifstream::traits_type::eof() && this->status != status_t::LE) {
+            this->status = status_t::RE;
             return false;
         }
         bool flag = false;

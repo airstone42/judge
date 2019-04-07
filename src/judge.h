@@ -11,7 +11,7 @@
 namespace judgement {
     class Judge {
     public:
-        explicit Judge(source_t source, const status_t &status = status_t::Waiting);
+        explicit Judge(source_t source, const status_t &status = status_t::W);
 
         const status_t &get_status() const;
 
