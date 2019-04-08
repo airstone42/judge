@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Online Judge</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
 <header>
-    <h1>Online Judge</h1>
+    <h1><a href="">Online Judge</a></h1>
     <hr/>
 </header>
 <main>
@@ -27,20 +28,21 @@
             <em>10</em>
         </div>
         <div id="solution">
-            <h3>Solution</h3>
             <form action="" method="post">
                 <fieldset>
-                    <legend>Code Section</legend>
+                    <legend><strong>Code Section</strong></legend>
                     <label for="code">Input your code here</label>
-                    <textarea id="code" name="code" cols="20" rows="20"></textarea>
-                    <br/>
+                    <textarea id="code" name="code" cols="50" rows="15"></textarea>
                     <label for="type">Select source code type</label>
                     <select id="type" name="type">
                         <option value="c">C</option>
                         <option value="c++">C++</option>
                     </select>
-                    <button type="submit" id="submit">Submit</button>
-                    <button type="reset">Cancel</button>
+                    <br/>
+                    <div id="button-group">
+                        <button type="submit" id="submit">Submit</button>
+                        <button type="reset">Cancel</button>
+                    </div>
                 </fieldset>
             </form>
         </div>

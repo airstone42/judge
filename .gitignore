@@ -6,6 +6,7 @@
 !/examples/jailed.c
 /tests/*
 !/tests/client
+!/tests/index.css
 !/tests/index.php
 !/tests/input.txt
 !/tests/log/
