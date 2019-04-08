@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 #include <filesystem>
+#include <thread>
 #include <fstream>
 
 #include <unistd.h>
@@ -99,7 +100,7 @@ namespace judgement {
         }
         this->compiling_pid = proc_compile;
         rusage usage{};
-        sleep(TIME_LIMIT);
+        std::this_thread::sleep_for(std::chrono::seconds(TIME_LIMIT));
         if (!wait4(proc_compile, proc_status, WNOHANG, &usage)) {
             kill(proc_compile, SIGKILL);
             this->status = status_t::CE;
@@ -130,7 +131,7 @@ namespace judgement {
         }
         this->executing_pid = proc_execute;
         rusage usage{};
-        sleep(TIME_LIMIT);
+        std::this_thread::sleep_for(std::chrono::seconds(TIME_LIMIT));
         if (!wait4(proc_execute, proc_status, WNOHANG, &usage)) {
             kill(proc_execute, SIGKILL);
             this->status = status_t::LE;
