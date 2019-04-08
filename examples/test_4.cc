@@ -1,4 +1,4 @@
-/* Expected: Limit exceed! */
+/* Expected: Limit exceeded! */
 
 int main() {
     while (true) {}
