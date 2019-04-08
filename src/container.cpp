@@ -39,7 +39,7 @@ namespace judgement {
         while (true) {
             zmq::message_t request;
             socket.recv(&request);
-            std::cout << ">> Received <" << std::string(static_cast<char *>(request.data()), request.size()) << ">"
+            std::cout << "=====>> Received <" << std::string(static_cast<char *>(request.data()), request.size()) << ">"
                       << std::endl;
             if (!request.size())
                 return;
@@ -70,14 +70,14 @@ namespace judgement {
             message += time_message(this->compiling_time(offset)) + "ms:";
             message += time_message(this->executing_time(offset)) + "ms:";
             message += std::to_string(this->executing_memory(offset)) + "kB";
-            std::cout << "<< " + message << std::endl;
+            std::cout << "<<===== " + message << std::endl;
             zmq::message_t reply(message.size());
             memcpy(reply.data(), message.data(), message.size());
             socket.send(reply);
         } catch (std::out_of_range &) {
             std::string message = std::to_string(input.id) + ":";
             message += status_message(status_t::E) + ":0ms:0ms:0kB";
-            std::cout << "<< " + message << std::endl;
+            std::cout << "<<===== " + message << std::endl;
             zmq::message_t reply(message.size());
             memcpy(reply.data(), message.data(), message.size());
             socket.send(reply);
