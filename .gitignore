@@ -2,13 +2,13 @@
 /cmake-build-debug/
 /CMakeFiles/
 /examples/*
-!/examples/test*
-!/examples/jailed.c
+!/examples/example*
 /tests/*
 !/tests/client
 !/tests/index.css
 !/tests/index.php
 !/tests/input.txt
+!/tests/jailed.c
 !/tests/log/
 /tests/log/*.log
 !/tests/log/.*

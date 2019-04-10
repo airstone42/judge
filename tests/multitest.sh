@@ -3,8 +3,8 @@
 dir=$(dirname "$0")
 cd ${dir}/..
 
-input=("examples/test" "examples/test:cpp" "examples/test:in" "1:examples/test"\
-		"2:examples/test:cpp" "3:examples/test:cxx" "4:examples/test:cc")
+input=("1:examples/example" "2:examples/example:cpp" "examples/example:in" "3:examples/example"\
+		"4:examples/example:cpp" "5:examples/example:cxx" "6:examples/example:cc")
 
 term() {
 	find "examples/" -regex "examples/[0-9].*" -delete

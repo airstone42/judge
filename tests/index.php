@@ -11,7 +11,7 @@
     <hr/>
 </header>
 <main>
-    <h2>Problem: Test</h2>
+    <h2>Problem: Example</h2>
     <div id="wrapper">
         <div id="description">
             <h3>Problem Description</h3>
@@ -55,7 +55,7 @@
                 echo 'Source type error!';
             } else {
                 $id = rand(5, 100);
-                $name = 'examples/test';
+                $name = 'examples/example';
                 $type = $_POST['type'] == 'c' ? 'c' : 'cxx';
                 file_put_contents("../$name" . "_$id.$type", $_POST['code']);
                 try {
