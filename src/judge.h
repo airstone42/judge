@@ -35,8 +35,6 @@ namespace judgement {
     private:
         source_t source;
         status_t status;
-        pid_t compiling_pid;
-        pid_t executing_pid;
         std::chrono::milliseconds compiling_time;
         std::chrono::milliseconds executing_time;
         long executing_memory;

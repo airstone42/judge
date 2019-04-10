@@ -15,8 +15,7 @@
 
 namespace judgement {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
-                                                            compiling_pid(-1), executing_pid(-1), compiling_time(0),
-                                                            executing_time(0), executing_memory(0) {}
+                                                            compiling_time(0), executing_time(0), executing_memory(0) {}
 
 
     const status_t &Judge::get_status() const {
@@ -52,7 +51,7 @@ namespace judgement {
         const std::filesystem::path result_path =
                 file_name.parent_path().string() + "/" + std::to_string(offset) + ".txt";
         const std::filesystem::path log_path = file_name.parent_path().string() + "/" + std::to_string(offset) + ".log";
-        bool compare_result = false;
+        bool compare_result;
         if (!std::filesystem::exists(file_name)) {
             this->status = status_t::NF;
             goto remove;
@@ -61,13 +60,13 @@ namespace judgement {
             this->status = status_t::TE;
             goto remove;
         }
-        compile(file_name, exec_name, log_path);
+        this->compile(file_name, exec_name, log_path);
         if (!std::filesystem::exists(exec_name))
             this->status = status_t::CE;
         if (this->get_status() == status_t::CE)
             goto remove;
-        execute(exec_path, result_path, log_path, in_path);
-        compare_result = compare(out_path, result_path);
+        this->execute(exec_path, result_path, log_path, in_path);
+        compare_result = this->compare(out_path, result_path);
         if (this->get_status() == status_t::LE || this->get_status() == status_t::RE)
             goto remove;
         this->status = (compare_result) ? status_t::AC : status_t::WA;
@@ -98,9 +97,8 @@ namespace judgement {
                     exit(0);
             }
         }
-        this->compiling_pid = proc_compile;
-        rusage usage{};
         std::this_thread::sleep_for(std::chrono::seconds(TIME_LIMIT));
+        rusage usage{};
         if (!wait4(proc_compile, proc_status, WNOHANG, &usage)) {
             kill(proc_compile, SIGKILL);
             this->status = status_t::CE;
@@ -129,9 +127,8 @@ namespace judgement {
             close(fd_log);
             execlp(exec_path.c_str(), exec_path.c_str(), nullptr);
         }
-        this->executing_pid = proc_execute;
-        rusage usage{};
         std::this_thread::sleep_for(std::chrono::seconds(TIME_LIMIT));
+        rusage usage{};
         if (!wait4(proc_execute, proc_status, WNOHANG, &usage)) {
             kill(proc_execute, SIGKILL);
             this->status = status_t::LE;
