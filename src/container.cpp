@@ -53,36 +53,37 @@ namespace judgement {
             return;
         input_t input = split(str);
         double offset = input.id;
-        {
-            std::lock_guard<std::mutex> lock(this->mutex);
-            do {
-                std::random_device rd;
-                std::mt19937 mt(rd());
-                std::uniform_real_distribution<> dist(0, 1);
-                offset += dist(mt);
-            } while (this->judges.find(input.id) != this->judges.end());
-            this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.ext_type})));
-        }
+        this->insert(offset, input);
+        std::string message = std::to_string(input.id) + ":";
         try {
             this->judges.at(offset).run(offset);
-            std::string message = std::to_string(input.id) + ":";
             message += status_message(this->status(offset)) + ":";
             message += time_message(this->compiling_time(offset)) + "ms:";
             message += time_message(this->executing_time(offset)) + "ms:";
             message += std::to_string(this->executing_memory(offset)) + "kB";
-            std::cout << "<<===== " + message << std::endl;
-            zmq::message_t reply(message.size());
-            memcpy(reply.data(), message.data(), message.size());
-            socket.send(reply);
         } catch (std::out_of_range &) {
-            std::string message = std::to_string(input.id) + ":";
             message += status_message(status_t::E) + ":0ms:0ms:0kB";
-            std::cout << "<<===== " + message << std::endl;
-            zmq::message_t reply(message.size());
-            memcpy(reply.data(), message.data(), message.size());
-            socket.send(reply);
         }
+        this->reply(message, socket);
         std::lock_guard<std::mutex> lock(this->mutex);
         this->judges.erase(offset);
+    }
+
+    void Container::insert(double &offset, const input_t &input) {
+        std::lock_guard<std::mutex> lock(this->mutex);
+        do {
+            std::random_device rd;
+            std::mt19937 mt(rd());
+            std::uniform_real_distribution<> dist(0, 1);
+            offset += dist(mt);
+        } while (this->judges.find(input.id) != this->judges.end());
+        this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.ext_type})));
+    }
+
+    void Container::reply(const std::string &message, zmq::socket_t &socket) {
+        std::cout << "<<===== " + message << std::endl;
+        zmq::message_t reply(message.size());
+        memcpy(reply.data(), message.data(), message.size());
+        socket.send(reply);
     }
 }

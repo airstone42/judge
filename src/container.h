@@ -33,6 +33,10 @@ namespace judgement {
 
         void run(const zmq::message_t &request, zmq::socket_t &socket);
 
+        void insert(double &offset, const input_t &input);
+
+        void reply(const std::string &message, zmq::socket_t &socket);
+
     private:
         Container() = default;
 
