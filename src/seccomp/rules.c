@@ -6,13 +6,8 @@ extern "C" {
 
 #include <dlfcn.h>
 
-int __libc_start_main(int *(main)(int, char **, char **),
-                      int argc,
-                      char **argv,
-                      void (*init)(void),
-                      void (*fini)(void),
-                      void (*rtld_fini)(void),
-                      void (*stack_end)) {
+int __libc_start_main(int *(main)(int, char **, char **), int argc, char **argv, void (*init)(void), void (*fini)(void),
+                      void (*rtld_fini)(void), void (*stack_end)) {
     int (*libc_start_main)(int *(*)(int, char **, char **), int, char **, void (*)(), void (*)(), void (*)(),
                            void *) = (int (*)(int *(*)(int, char **, char **), int, char **, void (*)(), void (*)(),
                                               void (*)(), void *)) dlsym(dlopen("libc.so.6", RTLD_LOCAL | RTLD_LAZY),
