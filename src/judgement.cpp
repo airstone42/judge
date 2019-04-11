@@ -10,6 +10,7 @@ namespace judgement {
     const int TIME_LIMIT = 1;
     const char *const C_COMPILER = "gcc";
     const char *const CXX_COMPILER = "g++";
+    const char *const NULL_PATH = "/dev/null";
     const char *const SECCOMP_SOURCE = "src/seccomp/rules.c";
     const char *const DL_LIBRARY = "-ldl";
     const char *const SECCOMP_LIBRARY = "-lseccomp";
@@ -22,7 +23,7 @@ namespace judgement {
             now = pos + delimiter.length();
         }
         vector.push_back(input.substr(now, pos - now));
-        ext_t ext_type;
+        ext_t ext_type = ext_t::Other;
         switch (vector.size()) {
             case 4:
                 if (vector[3] == "c")
@@ -49,7 +50,7 @@ namespace judgement {
                     return {vector[0], vector[1], vector[2], ext_type, 0};
                 }
             default:
-                return input_t{};
+                return input_t{NULL_PATH, NULL_PATH, NULL_PATH, ext_type, 0};
         }
     }
 
