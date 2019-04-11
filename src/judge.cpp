@@ -35,22 +35,21 @@ namespace judgement {
     }
 
     void Judge::run(double offset) {
-        const std::filesystem::path io_name = this->source.name;
-        std::filesystem::path file_name = this->source.name;
+        const std::filesystem::path io_name = this->source.io_path;
+        std::filesystem::path file_name = this->source.code_path;
         if (std::floor(offset)) {
             file_name += "_" + std::to_string((int) std::floor(offset)) + "." + this->source.ext;
             if (!std::filesystem::exists(file_name))
-                file_name = this->source.name + "." + this->source.ext;
+                file_name = this->source.code_path + "." + this->source.ext;
         } else {
             file_name += "." + this->source.ext;
         }
         const std::filesystem::path exec_name = file_name.parent_path().string() + "/" + std::to_string(offset);
         const std::filesystem::path exec_path = "./" + exec_name.string();
-        const std::filesystem::path in_path = this->source.name + ".in";
-        const std::filesystem::path out_path = this->source.name + ".out";
-        const std::filesystem::path result_path =
-                file_name.parent_path().string() + "/" + std::to_string(offset) + ".txt";
-        const std::filesystem::path log_path = file_name.parent_path().string() + "/" + std::to_string(offset) + ".log";
+        const std::filesystem::path in_path = this->source.io_path + ".in";
+        const std::filesystem::path out_path = this->source.io_path + ".out";
+        const std::filesystem::path res_path = io_name.parent_path().string() + "/" + std::to_string(offset) + ".txt";
+        const std::filesystem::path log_path = io_name.parent_path().string() + "/" + std::to_string(offset) + ".log";
         bool compare_result;
         if (!std::filesystem::exists(file_name)) {
             this->status = status_t::NF;
@@ -65,14 +64,14 @@ namespace judgement {
             this->status = status_t::CE;
         if (this->get_status() == status_t::CE)
             goto remove;
-        this->execute(exec_path, result_path, log_path, in_path);
-        compare_result = this->compare(out_path, result_path);
+        this->execute(exec_path, res_path, log_path, in_path);
+        compare_result = this->compare(out_path, res_path);
         if (this->get_status() == status_t::LE || this->get_status() == status_t::RE)
             goto remove;
         this->status = (compare_result) ? status_t::AC : status_t::WA;
         remove:
         std::filesystem::remove(exec_path);
-        std::filesystem::remove(result_path);
+        std::filesystem::remove(res_path);
         std::filesystem::remove(log_path);
     }
 

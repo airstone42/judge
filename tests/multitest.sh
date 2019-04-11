@@ -3,7 +3,7 @@
 dir=$(dirname "$0")
 cd ${dir}/..
 
-input=("1:examples/example" "2:examples/example:cpp" "examples/example:in" "3:examples/example"\
+input=("1:examples/example:c" "2:examples/example:cpp" "0:examples/example:in" "3:examples/example:c"\
 		"4:examples/example:cpp" "5:examples/example:cxx" "6:examples/example:cc")
 
 term() {

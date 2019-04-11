@@ -77,7 +77,7 @@ namespace judgement {
             std::uniform_real_distribution<> dist(0, 1);
             offset += dist(mt);
         } while (this->judges.find(input.id) != this->judges.end());
-        this->judges.insert(std::make_pair(offset, Judge({input.name, input.ext, input.ext_type})));
+        this->judges.insert(std::make_pair(offset, Judge({input.io_path, input.code_path, input.ext, input.ext_type})));
     }
 
     void Container::reply(const std::string &message, zmq::socket_t &socket) {

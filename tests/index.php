@@ -55,19 +55,20 @@
                 echo 'Source type error!';
             } else {
                 $id = rand(5, 100);
-                $name = 'examples/example';
+                $io = 'examples/example';
+                $code = 'tests/test';
                 $type = $_POST['type'] == 'c' ? 'c' : 'cxx';
-                file_put_contents("../$name" . "_$id.$type", $_POST['code']);
+                file_put_contents("../$code" . "_$id.$type", $_POST['code']);
                 try {
                     $context = new ZMQContext();
                     $request = new ZMQSocket($context, ZMQ::SOCKET_REQ);
                     $request->connect("tcp://localhost:5555");
-                    $request->send("$id:$name:$type");
+                    $request->send("$id:$io:$code:$type");
                     $reply = explode(":", $request->recv());
                 } catch (ZMQSocketException $e) {
                     $exception = 'ZeroMQ exception!';
                 }
-                unlink("../$name" . "_$id.$type");
+                unlink("../$code" . "_$id.$type");
             }
         }
         if (isset($reply[1]) && $reply[1] === 'Accepted!') {

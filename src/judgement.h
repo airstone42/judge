@@ -38,7 +38,8 @@ namespace judgement {
     };
 
     struct source_t {
-        std::string name;
+        std::string io_path;
+        std::string code_path;
         std::string ext;
         ext_t ext_type;
     };
@@ -47,7 +48,7 @@ namespace judgement {
         long id = 0;
     };
 
-    input_t split(const std::string &input);
+    input_t split(const std::string &input, const std::string &delimiter = ":");
 
     std::string status_message(const status_t &status);
 

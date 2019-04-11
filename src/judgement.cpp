@@ -14,46 +14,42 @@ namespace judgement {
     const char *const DL_LIBRARY = "-ldl";
     const char *const SECCOMP_LIBRARY = "-lseccomp";
 
-    input_t split(const std::string &input) {
-        std::string delimiter = ":";
-        if (input.find(delimiter) == std::string::npos) {
-            return input_t{input, "c", ext_t::C, 0};
-        } else if (input.find(delimiter) == input.rfind(delimiter)) {
-            try {
-                std::string id = input.substr(0, input.find(delimiter));
-                std::string name = input.substr(input.find(delimiter) + 1, input.size() - input.find(delimiter));
-                return input_t{name, "c", ext_t::C, std::stoi(id)};
-            } catch (std::out_of_range &) {
-                std::string name = input.substr(input.find(delimiter) + 1, input.size() - input.find(delimiter));
-                return input_t{name, "c", ext_t::C, 0};
-            } catch (std::invalid_argument &) {
-                std::string name = input.substr(0, input.find(delimiter));
-                std::string ext = input.substr(input.find(delimiter) + 1, input.size() - input.find(delimiter));
-                ext_t ext_type;
-                if (ext == "c")
+    input_t split(const std::string &input, const std::string &delimiter) {
+        std::vector<std::string> vector;
+        std::string::size_type pos = 0, now = 0;
+        while ((pos = input.find(delimiter, now)) != std::string::npos) {
+            vector.push_back(input.substr(now, pos - now));
+            now = pos + delimiter.length();
+        }
+        vector.push_back(input.substr(now, pos - now));
+        ext_t ext_type;
+        switch (vector.size()) {
+            case 4:
+                if (vector[3] == "c")
                     ext_type = ext_t::C;
-                else if (ext == "cpp" || ext == "cxx" || ext == "cc")
+                else if (vector[3] == "cpp" || vector[3] == "cxx" || vector[3] == "cc")
                     ext_type = ext_t::CXX;
                 else
                     ext_type = ext_t::Other;
-                return input_t{name, ext, ext_type, 0};
-            }
-        } else {
-            std::string id = input.substr(0, input.find(delimiter));
-            std::string name = input.substr(input.find(delimiter) + 1, input.rfind(delimiter) - input.find(delimiter) - 1);
-            std::string ext = input.substr(input.rfind(delimiter) + 1, input.size() - input.rfind(delimiter));
-            ext_t ext_type;
-            if (ext == "c")
-                ext_type = ext_t::C;
-            else if (ext == "cpp" || ext == "cxx" || ext == "cc")
-                ext_type = ext_t::CXX;
-            else
-                ext_type = ext_t::Other;
-            try {
-                return input_t{name, ext, ext_type, std::stol(id)};
-            } catch (std::invalid_argument &) {
-                return input_t{name, ext, ext_type, 0};
-            }
+                try {
+                    return {vector[1], vector[2], vector[3], ext_type, std::stol(vector[0])};
+                } catch (std::invalid_argument &) {
+                    return {vector[1], vector[2], vector[3], ext_type, 0};
+                }
+            case 3:
+                if (vector[2] == "c")
+                    ext_type = ext_t::C;
+                else if (vector[2] == "cpp" || vector[2] == "cxx" || vector[2] == "cc")
+                    ext_type = ext_t::CXX;
+                else
+                    ext_type = ext_t::Other;
+                try {
+                    return {vector[1], vector[1], vector[2], ext_type, std::stol(vector[0])};
+                } catch (std::invalid_argument &) {
+                    return {vector[0], vector[1], vector[2], ext_type, 0};
+                }
+            default:
+                return input_t{};
         }
     }
 
