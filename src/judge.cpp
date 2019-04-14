@@ -1,4 +1,5 @@
 #include "judge.h"
+#include "status.h"
 
 #include <utility>
 #include <chrono>
@@ -51,28 +52,25 @@ namespace judgement {
         const std::filesystem::path res_path = io_name.parent_path().string() + "/" + std::to_string(offset) + ".txt";
         const std::filesystem::path log_path = io_name.parent_path().string() + "/" + std::to_string(offset) + ".log";
         bool compare_result;
-        if (!std::filesystem::exists(file_name)) {
-            this->status = status_t::NF;
-            goto remove;
+        try {
+            if (!std::filesystem::exists(file_name))
+                throw Status(status_t::NF);
+            if (this->source.ext_type == ext_t::Other)
+                throw Status(status_t::TE);
+            this->compile(file_name, exec_name, log_path);
+            if (!std::filesystem::exists(exec_name))
+                throw Status(status_t::CE);
+            this->execute(exec_path, res_path, log_path, in_path);
+            compare_result = this->compare(out_path, res_path);
+            if (this->get_status() == status_t::LE || this->get_status() == status_t::RE)
+                throw Status(this->get_status());
+            throw (compare_result) ? Status(status_t::AC) : Status(status_t::WA);
+        } catch (Status &status) {
+            this->status = status.get_status();
+            std::filesystem::remove(exec_path);
+            std::filesystem::remove(res_path);
+            std::filesystem::remove(log_path);
         }
-        if (this->source.ext_type == ext_t::Other) {
-            this->status = status_t::TE;
-            goto remove;
-        }
-        this->compile(file_name, exec_name, log_path);
-        if (!std::filesystem::exists(exec_name))
-            this->status = status_t::CE;
-        if (this->get_status() == status_t::CE)
-            goto remove;
-        this->execute(exec_path, res_path, log_path, in_path);
-        compare_result = this->compare(out_path, res_path);
-        if (this->get_status() == status_t::LE || this->get_status() == status_t::RE)
-            goto remove;
-        this->status = (compare_result) ? status_t::AC : status_t::WA;
-        remove:
-        std::filesystem::remove(exec_path);
-        std::filesystem::remove(res_path);
-        std::filesystem::remove(log_path);
     }
 
     void Judge::compile(const std::filesystem::path &file_name, const std::filesystem::path &exec_name,
