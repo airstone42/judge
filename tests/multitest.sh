@@ -26,11 +26,13 @@ for (( i = 0; i < 10; i++ )); do
 	r2=$(( RANDOM % ${#input[@]} ))
 	r3=$(( RANDOM % ${#input[@]} ))
 	r4=$(( RANDOM % ${#input[@]} ))
+	r5=$(( RANDOM % ${#input[@]} ))
 	${client} <<EOF > tests/log/${i}.log 2>&1 &
 ${input[r1]}
 ${input[r2]}
 ${input[r3]}
 ${input[r4]}
+${input[r5]}
 EOF
 done
 

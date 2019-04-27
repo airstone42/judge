@@ -8,7 +8,7 @@
 namespace judgement {
     const char *const TCP_ADDRESS = "tcp://*:5555";
     const char *const INPROC_ADDRESS = "inproc://worker";
-    const int MAX_WORKERS = 50;
+    const int MAX_WORKERS = 100;
     const int TIME_LIMIT_MS = 1000;
     const int TIME_INTERVAL_MS = 20;
     const char *const C_COMPILER = "gcc";
