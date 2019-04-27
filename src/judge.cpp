@@ -63,9 +63,9 @@ namespace judgement {
     }
 
     void Judge::compile(const SourcePath &source_path) {
-        const std::filesystem::path& log_path = source_path.get_log_path();
-        const std::filesystem::path& file_name = source_path.get_file_name();
-        const std::filesystem::path& exec_name = source_path.get_exec_name();
+        const std::filesystem::path &log_path = source_path.get_log_path();
+        const std::filesystem::path &file_name = source_path.get_file_name();
+        const std::filesystem::path &exec_name = source_path.get_exec_name();
         int *proc_status = nullptr;
         pid_t proc_compile = fork();
         if (!proc_compile) {
@@ -85,22 +85,29 @@ namespace judgement {
                     exit(0);
             }
         }
-        std::this_thread::sleep_for(std::chrono::seconds(TIME_LIMIT));
         rusage usage{};
+        int poll_count = 0;
+        poll:
+        std::this_thread::sleep_for(std::chrono::milliseconds(TIME_INTERVAL_MS));
+        poll_count++;
         if (!wait4(proc_compile, proc_status, WNOHANG, &usage)) {
-            kill(proc_compile, SIGKILL);
-            status = status_t::CE;
-            return;
+            if (poll_count <= TIME_LIMIT_MS / TIME_INTERVAL_MS) {
+                goto poll;
+            } else {
+                kill(proc_compile, SIGKILL);
+                status = status_t::CE;
+                return;
+            }
         } else {
             compilation_time = time_cast(usage.ru_utime);
         }
     }
 
     void Judge::execute(const SourcePath &source_path) {
-        const std::filesystem::path& in_path = source_path.get_in_path();
-        const std::filesystem::path& result_path = source_path.get_res_path();
-        const std::filesystem::path& log_path = source_path.get_log_path();
-        const std::filesystem::path& exec_path = source_path.get_exec_path();
+        const std::filesystem::path &in_path = source_path.get_in_path();
+        const std::filesystem::path &result_path = source_path.get_res_path();
+        const std::filesystem::path &log_path = source_path.get_log_path();
+        const std::filesystem::path &exec_path = source_path.get_exec_path();
         int *proc_status = nullptr;
         pid_t proc_execute = fork();
         if (!proc_execute) {
@@ -117,12 +124,19 @@ namespace judgement {
             close(fd_log);
             execlp(exec_path.c_str(), exec_path.c_str(), nullptr);
         }
-        std::this_thread::sleep_for(std::chrono::seconds(TIME_LIMIT));
         rusage usage{};
+        int poll_count = 0;
+        poll:
+        std::this_thread::sleep_for(std::chrono::milliseconds(TIME_INTERVAL_MS));
+        poll_count++;
         if (!wait4(proc_execute, proc_status, WNOHANG, &usage)) {
-            kill(proc_execute, SIGKILL);
-            status = status_t::LE;
-            return;
+            if (poll_count <= TIME_LIMIT_MS / TIME_INTERVAL_MS) {
+                goto poll;
+            } else {
+                kill(proc_execute, SIGKILL);
+                status = status_t::LE;
+                return;
+            }
         } else {
             execution_time = time_cast(usage.ru_utime);
             execution_memory = usage.ru_maxrss;
