@@ -8,9 +8,9 @@ extern "C" {
 #include <seccomp.h>
 #include <sys/prctl.h>
 
-void seccomp();
+void seccomp_add();
 
-void rules(scmp_filter_ctx *ctx);
+void rules_add(scmp_filter_ctx *ctx);
 
 const int basic_rules[] = {SCMP_SYS(rt_sigreturn), SCMP_SYS(exit), SCMP_SYS(read), SCMP_SYS(write)};
 

@@ -1,7 +1,9 @@
 #include "judgement.h"
 
+#include <vector>
 #include <string>
 #include <stdexcept>
+#include <chrono>
 
 namespace judgement {
     const char *const TCP_ADDRESS = "tcp://*:5555";
@@ -12,8 +14,8 @@ namespace judgement {
     const char *const CXX_COMPILER = "g++";
     const char *const NULL_PATH = "/dev/null";
     const char *const SECCOMP_SOURCE = "src/seccomp/rules.c";
-    const char *const DL_LIBRARY = "-ldl";
-    const char *const SECCOMP_LIBRARY = "-lseccomp";
+    const char *const DL = "-ldl";
+    const char *const SECCOMP = "-lseccomp";
 
     input_t split(const std::string &input, const std::string &delimiter) {
         std::vector<std::string> vector;
@@ -83,5 +85,10 @@ namespace judgement {
 
     std::string time_message(const std::chrono::milliseconds &duration) {
         return std::to_string(duration.count());
+    }
+
+    std::chrono::milliseconds time_cast(const timeval &timeval) {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::seconds(timeval.tv_sec) + std::chrono::microseconds(timeval.tv_usec));
     }
 }

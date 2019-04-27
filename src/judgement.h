@@ -7,6 +7,8 @@
 #include <string>
 #include <chrono>
 
+#include <sys/time.h>
+
 namespace judgement {
     extern const char *const TCP_ADDRESS;
     extern const char *const INPROC_ADDRESS;
@@ -16,8 +18,8 @@ namespace judgement {
     extern const char *const CXX_COMPILER;
     extern const char *const NULL_PATH;
     extern const char *const SECCOMP_SOURCE;
-    extern const char *const DL_LIBRARY;
-    extern const char *const SECCOMP_LIBRARY;
+    extern const char *const DL;
+    extern const char *const SECCOMP;
 
     enum class ext_t : std::uint8_t {
         C,
@@ -54,6 +56,8 @@ namespace judgement {
     std::string status_message(const status_t &status);
 
     std::string time_message(const std::chrono::milliseconds &duration);
+
+    std::chrono::milliseconds time_cast(const timeval &timeval);
 }
 
 #endif

@@ -1,10 +1,8 @@
 #ifndef CONTAINER_H
 #define CONTAINER_H
 
-#include "judgement.h"
 #include "judge.h"
 
-#include <chrono>
 #include <mutex>
 #include <map>
 
@@ -44,6 +42,5 @@ namespace judgement {
         std::map<double, Judge> judges;
     };
 }
-
 
 #endif

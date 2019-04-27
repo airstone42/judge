@@ -7,17 +7,17 @@
 
 #include <unistd.h>
 
-using namespace std;
-using namespace zmq;
-
 int main() {
-    context_t context(1);
-    socket_t socket(context, ZMQ_REQ);
+    zmq::context_t context(1);
+    zmq::socket_t socket(context, ZMQ_REQ);
     socket.connect(TCP_ADDRESS);
-    cout << "Connecting to server…" << endl;
-    string input;
-    while (getline(cin, input) && !input.empty() && input != " ") {
-        signal(SIGALRM, alarm_handler);
+    std::cout << "Connecting to server "
+              << TCP_ADDRESS
+              << "..."
+              << std::endl;
+    std::string input;
+    while (getline(std::cin, input) && !input.empty() && input != " ") {
+        signal(SIGALRM, handler);
         alarm(limit);
         int result = run(input, socket);
         if (timeout && result)
@@ -28,18 +28,24 @@ int main() {
     return 0;
 }
 
-void alarm_handler(int sig) {
+void handler(int sig) {
     if (sig == SIGALRM)
         timeout = 1;
 }
 
-int run(const string &input, socket_t &socket) {
-    message_t request(input.size());
+int run(const std::string &input, zmq::socket_t &socket) {
+    zmq::message_t request(input.size());
     memcpy(request.data(), input.data(), input.size());
-    cout << "Sending: <" << string(static_cast<char *>(request.data()), request.size()) << ">" << endl;
+    std::cout << "Sending: <"
+              << std::string(static_cast<char *>(request.data()), request.size())
+              << ">"
+              << std::endl;
     socket.send(request);
-    message_t reply;
+    zmq::message_t reply;
     socket.recv(&reply);
-    cout << "Result: <" << string(static_cast<char *>(reply.data()), reply.size()) << ">" << endl;
+    std::cout << "Result: <"
+              << std::string(static_cast<char *>(reply.data()), reply.size())
+              << ">"
+              << std::endl;
     return 0;
 }

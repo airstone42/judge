@@ -6,8 +6,6 @@
 #include <filesystem>
 #include <chrono>
 
-#include <sys/types.h>
-
 namespace judgement {
     class Judge {
     public:
@@ -15,11 +13,11 @@ namespace judgement {
 
         const status_t &get_status() const;
 
-        const std::chrono::milliseconds &get_compiling_time() const;
+        const std::chrono::milliseconds &get_compilation_time() const;
 
-        const std::chrono::milliseconds &get_executing_time() const;
+        const std::chrono::milliseconds &get_execution_time() const;
 
-        long get_executing_memory() const;
+        long get_execution_memory() const;
 
         void run(double offset);
 
@@ -28,18 +26,17 @@ namespace judgement {
 
         void execute(const std::filesystem::path &exec_path, const std::filesystem::path &result_path,
                      const std::filesystem::path &log_path,
-                     const std::filesystem::path &in_path = std::filesystem::path());
+                     const std::filesystem::path &in_path);
 
         bool compare(const std::filesystem::path &out_path, const std::filesystem::path &result_path);
 
     private:
         source_t source;
         status_t status;
-        std::chrono::milliseconds compiling_time;
-        std::chrono::milliseconds executing_time;
-        long executing_memory;
+        std::chrono::milliseconds compilation_time;
+        std::chrono::milliseconds execution_time;
+        long execution_memory;
     };
 }
-
 
 #endif
