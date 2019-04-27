@@ -1,6 +1,7 @@
 #include "judgement.h"
 #include "judge.h"
 #include "status.h"
+#include "source_path.h"
 
 #include <utility>
 #include <filesystem>
@@ -14,6 +15,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/resource.h>
+#include <iostream>
 
 namespace judgement {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
@@ -38,45 +40,32 @@ namespace judgement {
     }
 
     void Judge::run(double offset) {
-        const std::filesystem::path io_name = source.io_path;
-        std::filesystem::path file_name = source.code_path;
-        if (std::floor(offset)) {
-            file_name += "_" + std::to_string((int) std::floor(offset)) + "." + source.ext;
-            if (!std::filesystem::exists(file_name))
-                file_name = source.code_path + "." + source.ext;
-        } else {
-            file_name += "." + source.ext;
-        }
-        const std::filesystem::path exec_name = file_name.parent_path().string() + "/" + std::to_string(offset);
-        const std::filesystem::path exec_path = "./" + exec_name.string();
-        const std::filesystem::path in_path = source.io_path + ".in";
-        const std::filesystem::path out_path = source.io_path + ".out";
-        const std::filesystem::path res_path = io_name.parent_path().string() + "/" + std::to_string(offset) + ".txt";
-        const std::filesystem::path log_path = io_name.parent_path().string() + "/" + std::to_string(offset) + ".log";
-        bool compare_result;
+        SourcePath source_path(source, offset);
         try {
-            if (!std::filesystem::exists(file_name))
+            if (!std::filesystem::exists(source_path.get_file_name()))
                 throw Status(status_t::NF);
             if (source.ext_type == ext_t::Other)
                 throw Status(status_t::TE);
-            compile(file_name, exec_name, log_path);
-            if (!std::filesystem::exists(exec_name))
+            compile(source_path);
+            if (!std::filesystem::exists(source_path.get_exec_name()))
                 throw Status(status_t::CE);
-            execute(exec_path, res_path, log_path, in_path);
-            compare_result = compare(out_path, res_path);
+            execute(source_path);
+            bool compare_result = compare(source_path);
             if (get_status() == status_t::LE || get_status() == status_t::RE)
                 throw Status(get_status());
             throw (compare_result) ? Status(status_t::AC) : Status(status_t::WA);
         } catch (Status &status) {
             this->status = status.get_status();
-            std::filesystem::remove(exec_path);
-            std::filesystem::remove(res_path);
-            std::filesystem::remove(log_path);
+            std::filesystem::remove(source_path.get_exec_path());
+            std::filesystem::remove(source_path.get_res_path());
+            std::filesystem::remove(source_path.get_log_path());
         }
     }
 
-    void Judge::compile(const std::filesystem::path &file_name, const std::filesystem::path &exec_name,
-                        const std::filesystem::path &log_path) {
+    void Judge::compile(const SourcePath &source_path) {
+        const std::filesystem::path& log_path = source_path.get_log_path();
+        const std::filesystem::path& file_name = source_path.get_file_name();
+        const std::filesystem::path& exec_name = source_path.get_exec_name();
         int *proc_status = nullptr;
         pid_t proc_compile = fork();
         if (!proc_compile) {
@@ -107,8 +96,11 @@ namespace judgement {
         }
     }
 
-    void Judge::execute(const std::filesystem::path &exec_path, const std::filesystem::path &result_path,
-                        const std::filesystem::path &log_path, const std::filesystem::path &in_path) {
+    void Judge::execute(const SourcePath &source_path) {
+        const std::filesystem::path& in_path = source_path.get_in_path();
+        const std::filesystem::path& result_path = source_path.get_res_path();
+        const std::filesystem::path& log_path = source_path.get_log_path();
+        const std::filesystem::path& exec_path = source_path.get_exec_path();
         int *proc_status = nullptr;
         pid_t proc_execute = fork();
         if (!proc_execute) {
@@ -137,9 +129,9 @@ namespace judgement {
         }
     }
 
-    bool Judge::compare(const std::filesystem::path &out_path, const std::filesystem::path &result_path) {
-        std::ifstream out(out_path);
-        std::ifstream result(result_path);
+    bool Judge::compare(const SourcePath &source_path) {
+        std::ifstream out(source_path.get_out_path());
+        std::ifstream result(source_path.get_res_path());
         if (result.peek() == std::ifstream::traits_type::eof() && status != status_t::LE) {
             status = status_t::RE;
             return false;

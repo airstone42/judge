@@ -2,6 +2,7 @@
 #define JUDGE_H
 
 #include "judgement.h"
+#include "source_path.h"
 
 #include <filesystem>
 #include <chrono>
@@ -21,14 +22,11 @@ namespace judgement {
 
         void run(double offset);
 
-        void compile(const std::filesystem::path &file_name, const std::filesystem::path &exec_name,
-                     const std::filesystem::path &log_path);
+        void compile(const SourcePath &source_path);
 
-        void execute(const std::filesystem::path &exec_path, const std::filesystem::path &result_path,
-                     const std::filesystem::path &log_path,
-                     const std::filesystem::path &in_path);
+        void execute(const SourcePath &source_path);
 
-        bool compare(const std::filesystem::path &out_path, const std::filesystem::path &result_path);
+        bool compare(const SourcePath &source_path);
 
     private:
         source_t source;
