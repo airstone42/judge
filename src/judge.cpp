@@ -1,7 +1,7 @@
-#include "judgement.h"
+#include "util.h"
 #include "judge.h"
 #include "status.h"
-#include "source_path.h"
+#include "path.h"
 
 #include <utility>
 #include <filesystem>
@@ -17,7 +17,7 @@
 #include <sys/resource.h>
 #include <iostream>
 
-namespace judgement {
+namespace judge {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),
                                                             compilation_time(0), execution_time(0),
                                                             execution_memory(0) {}
@@ -40,7 +40,7 @@ namespace judgement {
     }
 
     void Judge::run(double offset) {
-        SourcePath source_path(source, offset);
+        Path source_path(source, offset);
         try {
             if (!std::filesystem::exists(source_path.get_file_name()))
                 throw Status(status_t::NF);
@@ -62,7 +62,7 @@ namespace judgement {
         }
     }
 
-    void Judge::compile(const SourcePath &source_path) {
+    void Judge::compile(const Path &source_path) {
         const std::filesystem::path &log_path = source_path.get_log_path();
         const std::filesystem::path &file_name = source_path.get_file_name();
         const std::filesystem::path &exec_name = source_path.get_exec_name();
@@ -103,7 +103,7 @@ namespace judgement {
         }
     }
 
-    void Judge::execute(const SourcePath &source_path) {
+    void Judge::execute(const Path &source_path) {
         const std::filesystem::path &in_path = source_path.get_in_path();
         const std::filesystem::path &result_path = source_path.get_res_path();
         const std::filesystem::path &log_path = source_path.get_log_path();
@@ -143,7 +143,7 @@ namespace judgement {
         }
     }
 
-    bool Judge::compare(const SourcePath &source_path) {
+    bool Judge::compare(const Path &source_path) {
         std::ifstream out(source_path.get_out_path());
         std::ifstream result(source_path.get_res_path());
         if (result.peek() == std::ifstream::traits_type::eof() && status != status_t::LE) {

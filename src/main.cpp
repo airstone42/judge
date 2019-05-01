@@ -1,4 +1,4 @@
-#include "judgement.h"
+#include "util.h"
 #include "container.h"
 
 #include <thread>
@@ -6,18 +6,18 @@
 #include <functional>
 
 int main(int argc, char *argv[]) {
-    judgement::Container &container = judgement::Container::instance();
+    judge::Container &container = judge::Container::instance();
     zmq::context_t context(1);
     zmq::socket_t master(context, ZMQ_ROUTER);
-    master.bind(judgement::TCP_ADDRESS);
+    master.bind(judge::TCP_ADDRESS);
     zmq::socket_t worker(context, ZMQ_DEALER);
-    worker.bind(judgement::INPROC_ADDRESS);
+    worker.bind(judge::INPROC_ADDRESS);
     std::cout << "Listening on "
-              << judgement::TCP_ADDRESS
+              << judge::TCP_ADDRESS
               << "..."
               << std::endl;
-    for (int i = 0; i < judgement::MAX_THREADS; i++)
-        std::thread(&judgement::Container::handle, std::ref(container), std::ref(context)).detach();
+    for (int i = 0; i < judge::MAX_THREADS; i++)
+        std::thread(&judge::Container::handle, std::ref(container), std::ref(context)).detach();
     zmq::proxy(static_cast<void *>(master), static_cast<void *>(worker), nullptr);
     return 0;
 }

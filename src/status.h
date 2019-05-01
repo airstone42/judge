@@ -1,11 +1,11 @@
 #ifndef STATUS_H
 #define STATUS_H
 
-#include "judgement.h"
+#include "util.h"
 
 #include <exception>
 
-namespace judgement {
+namespace judge {
     class Status : public std::exception {
         friend std::string status_message(const status_t &status);
 

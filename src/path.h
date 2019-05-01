@@ -1,17 +1,17 @@
-#ifndef SOURCE_PATH_H
-#define SOURCE_PATH_H
+#ifndef PATH_H
+#define PATH_H
 
-#include "judgement.h"
+#include "util.h"
 
 #include <string>
 #include <filesystem>
 
-namespace judgement {
-    class SourcePath {
+namespace judge {
+    class Path final {
     public:
-        SourcePath(const source_t &source, double offset);
+        explicit Path(const source_t &source, double offset);
 
-        SourcePath(const std::string &io_path, const std::string &code_path, const std::string &ext, double offset);
+        explicit Path(const std::string &io_path, const std::string &code_path, const std::string &ext, double offset);
 
         const std::filesystem::path &get_file_name() const;
 
@@ -37,6 +37,5 @@ namespace judgement {
         std::filesystem::path log_path;
     };
 }
-
 
 #endif

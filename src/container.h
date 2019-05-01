@@ -7,8 +7,8 @@
 #include <map>
 #include <atomic>
 
-namespace judgement {
-    class Container {
+namespace judge {
+    class Container final {
     public:
         static Container &instance();
 
@@ -41,7 +41,7 @@ namespace judgement {
 
         std::mutex mutex;
         std::map<double, Judge> judges;
-        std::atomic_int working;
+        std::atomic_int working = 0;
     };
 }
 

@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 
-namespace judgement {
+namespace judge {
     Container &Container::instance() {
         static Container container;
         return container;

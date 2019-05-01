@@ -1,4 +1,4 @@
-/.idea/
+.idea/
 /cmake-build-debug/
 /CMakeFiles/
 /examples/*
@@ -14,11 +14,12 @@
 !/tests/log/.*
 !/tests/multitest.sh
 !/tests/test.sh
+!/tests/web
 a.out
 Client
 cmake_install.cmake
 CMakeCache.txt
 Jailed
 Judge
-Judgement.cbp
+Judge.cbp
 Makefile

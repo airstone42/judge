@@ -1,11 +1,11 @@
-#include "judgement.h"
+#include "util.h"
 
 #include <vector>
 #include <string>
 #include <stdexcept>
 #include <chrono>
 
-namespace judgement {
+namespace judge {
     const char *const TCP_ADDRESS = "tcp://*:5555";
     const char *const INPROC_ADDRESS = "inproc://worker";
     const int MAX_THREADS = 100;

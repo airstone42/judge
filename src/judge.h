@@ -1,14 +1,14 @@
 #ifndef JUDGE_H
 #define JUDGE_H
 
-#include "judgement.h"
-#include "source_path.h"
+#include "util.h"
+#include "path.h"
 
 #include <filesystem>
 #include <chrono>
 
-namespace judgement {
-    class Judge {
+namespace judge {
+    class Judge final {
     public:
         explicit Judge(source_t source, const status_t &status = status_t::W);
 
@@ -22,11 +22,11 @@ namespace judgement {
 
         void run(double offset);
 
-        void compile(const SourcePath &source_path);
+        void compile(const Path &source_path);
 
-        void execute(const SourcePath &source_path);
+        void execute(const Path &source_path);
 
-        bool compare(const SourcePath &source_path);
+        bool compare(const Path &source_path);
 
     private:
         source_t source;

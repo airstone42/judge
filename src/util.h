@@ -1,5 +1,5 @@
-#ifndef JUDGEMENT_H
-#define JUDGEMENT_H
+#ifndef UTIL_H
+#define UTIL_H
 
 #include <zmq.hpp>
 
@@ -9,7 +9,7 @@
 
 #include <sys/time.h>
 
-namespace judgement {
+namespace judge {
     extern const char *const TCP_ADDRESS;
     extern const char *const INPROC_ADDRESS;
     extern const int MAX_THREADS;
