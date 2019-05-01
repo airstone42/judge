@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
               << judgement::TCP_ADDRESS
               << "..."
               << std::endl;
-    for (int i = 0; i < judgement::MAX_WORKERS; i++)
+    for (int i = 0; i < judgement::MAX_THREADS; i++)
         std::thread(&judgement::Container::handle, std::ref(container), std::ref(context)).detach();
     zmq::proxy(static_cast<void *>(master), static_cast<void *>(worker), nullptr);
     return 0;

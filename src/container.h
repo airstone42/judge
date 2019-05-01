@@ -5,6 +5,7 @@
 
 #include <mutex>
 #include <map>
+#include <atomic>
 
 namespace judgement {
     class Container {
@@ -40,6 +41,7 @@ namespace judgement {
 
         std::mutex mutex;
         std::map<double, Judge> judges;
+        std::atomic_int working;
     };
 }
 
