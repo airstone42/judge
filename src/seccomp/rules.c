@@ -25,9 +25,9 @@ void seccomp_add() {
 }
 
 void rules_add(scmp_filter_ctx *ctx) {
-    for (int i = 0; i < (int) (sizeof(basic_rules) / sizeof(*basic_rules)); i++)
+    for (int i = 0; i < (int) (sizeof(basic_rules) / sizeof(*basic_rules)); ++i)
         seccomp_rule_add(*ctx, SCMP_ACT_ALLOW, basic_rules[i], 0);
-    for (int i = 0; i < (int) (sizeof(other_rules) / sizeof(*other_rules)); i++)
+    for (int i = 0; i < (int) (sizeof(other_rules) / sizeof(*other_rules)); ++i)
         seccomp_rule_add(*ctx, SCMP_ACT_ALLOW, other_rules[i], 0);
 }
 

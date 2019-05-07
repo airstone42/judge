@@ -52,7 +52,7 @@ namespace judge {
     }
 
     void Container::run(const zmq::message_t &request, zmq::socket_t &socket) {
-        working++;
+        ++working;
         std::string str = std::string(static_cast<const char *>(request.data()), request.size());
         if (str.empty() || str == " ")
             return;
@@ -70,7 +70,7 @@ namespace judge {
             message += status_message(status_t::E) + ":0ms:0ms:0kB";
         }
         reply(message, socket);
-        working--;
+        --working;
         std::lock_guard<std::mutex> lock(mutex);
         judges.erase(offset);
     }

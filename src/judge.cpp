@@ -89,7 +89,7 @@ namespace judge {
         int poll_count = 0;
         poll:
         std::this_thread::sleep_for(std::chrono::milliseconds(TIME_INTERVAL_MS));
-        poll_count++;
+        ++poll_count;
         if (!wait4(proc_compile, proc_status, WNOHANG, &usage)) {
             if (poll_count <= TIME_LIMIT_MS / TIME_INTERVAL_MS) {
                 goto poll;
@@ -128,7 +128,7 @@ namespace judge {
         int poll_count = 0;
         poll:
         std::this_thread::sleep_for(std::chrono::milliseconds(TIME_INTERVAL_MS));
-        poll_count++;
+        ++poll_count;
         if (!wait4(proc_execute, proc_status, WNOHANG, &usage)) {
             if (poll_count <= TIME_LIMIT_MS / TIME_INTERVAL_MS) {
                 goto poll;

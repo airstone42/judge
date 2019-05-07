@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
               << judge::TCP_ADDRESS
               << "..."
               << std::endl;
-    for (int i = 0; i < judge::MAX_THREADS; i++)
+    for (int i = 0; i < judge::MAX_THREADS; ++i)
         std::thread(&judge::Container::handle, std::ref(container), std::ref(context)).detach();
     zmq::proxy(static_cast<void *>(master), static_cast<void *>(worker), nullptr);
     return 0;
