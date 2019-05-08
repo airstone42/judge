@@ -7,6 +7,11 @@
 #include <map>
 #include <atomic>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 namespace judge {
     class Container final {
     public:
@@ -32,6 +37,8 @@ namespace judge {
 
         void run(const zmq::message_t &request, zmq::socket_t &socket);
 
+        void out();
+
         void insert(double &offset, const input_t &input);
 
         void reply(const std::string &message, zmq::socket_t &socket);
@@ -41,7 +48,7 @@ namespace judge {
 
         std::mutex mutex;
         std::map<double, Judge> judges;
-        std::atomic_int working = 0;
+        std::atomic_ushort working = 0;
     };
 }
 

@@ -9,11 +9,11 @@ int main(int argc, char *argv[]) {
     judge::Container &container = judge::Container::instance();
     zmq::context_t context(1);
     zmq::socket_t master(context, ZMQ_ROUTER);
-    master.bind(judge::TCP_ADDRESS);
+    master.bind(std::string("tcp://*:") + judge::PORT);
     zmq::socket_t worker(context, ZMQ_DEALER);
     worker.bind(judge::INPROC_ADDRESS);
     std::cout << "Listening on "
-              << judge::TCP_ADDRESS
+              << std::string("tcp://*:") + judge::PORT
               << "..."
               << std::endl;
     for (int i = 0; i < judge::MAX_THREADS; ++i)

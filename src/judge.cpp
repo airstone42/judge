@@ -15,7 +15,6 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/resource.h>
-#include <iostream>
 
 namespace judge {
     Judge::Judge(source_t source, const status_t &status) : source(std::move(source)), status(status),

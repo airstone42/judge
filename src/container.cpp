@@ -8,8 +8,6 @@
 #include <stdexcept>
 #include <cstring>
 
-#include <unistd.h>
-
 namespace judge {
     Container &Container::instance() {
         static Container container;
@@ -53,6 +51,7 @@ namespace judge {
 
     void Container::run(const zmq::message_t &request, zmq::socket_t &socket) {
         ++working;
+        out();
         std::string str = std::string(static_cast<const char *>(request.data()), request.size());
         if (str.empty() || str == " ")
             return;
@@ -71,8 +70,17 @@ namespace judge {
         }
         reply(message, socket);
         --working;
+        out();
         std::lock_guard<std::mutex> lock(mutex);
         judges.erase(offset);
+    }
+
+    void Container::out() {
+        std::lock_guard<std::mutex> lock(mutex);
+        int fd = open((std::string(COUNT_PATH) + std::string(PORT)).c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_SYNC,
+                      0777);
+        write(fd, std::to_string(working.load()).c_str(), sizeof(char));
+        close(fd);
     }
 
     void Container::insert(double &offset, const input_t &input) {
