@@ -3,7 +3,7 @@ project(Judge)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Judge src/main.cpp src/util.cpp src/util.h src/judge.cpp src/judge.h src/container.cpp src/container.h src/status.cpp src/status.h src/path.cpp src/path.h)
+add_executable(Judge src/main.cpp src/tool.cpp src/tool.h src/judge.cpp src/judge.h src/container.cpp src/container.h src/status.cpp src/status.h src/path.cpp src/path.h src/conf.cpp src/conf.h)
 add_executable(Client tests/client/client.cpp tests/client/client.h)
 add_executable(Jailed tests/jailed.c src/seccomp/rules.c src/seccomp/rules.h)
 

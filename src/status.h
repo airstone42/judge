@@ -1,7 +1,7 @@
 #ifndef STATUS_H
 #define STATUS_H
 
-#include "util.h"
+#include "tool.h"
 
 #include <exception>
 

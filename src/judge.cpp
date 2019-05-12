@@ -1,5 +1,6 @@
-#include "util.h"
 #include "judge.h"
+#include "conf.h"
+#include "tool.h"
 #include "status.h"
 #include "path.h"
 

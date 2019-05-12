@@ -1,7 +1,7 @@
 #ifndef JUDGE_H
 #define JUDGE_H
 
-#include "util.h"
+#include "tool.h"
 #include "path.h"
 
 #include <filesystem>
