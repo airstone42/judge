@@ -58,7 +58,7 @@
                 $io = 'examples/example';
                 $code = 'tests/test';
                 $type = $_POST['type'] == 'c' ? 'c' : 'cxx';
-                file_put_contents("../$code" . "_$id.$type", $_POST['code']);
+                file_put_contents("../../$code" . "_$id.$type", $_POST['code']);
                 try {
                     $context = new ZMQContext();
                     $request = new ZMQSocket($context, ZMQ::SOCKET_REQ);
@@ -68,7 +68,7 @@
                 } catch (ZMQSocketException $e) {
                     $exception = 'ZeroMQ exception!';
                 }
-                unlink("../$code" . "_$id.$type");
+                unlink("../../$code" . "_$id.$type");
             }
         }
         if (isset($reply[1]) && $reply[1] === 'Accepted!') {

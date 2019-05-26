@@ -1,4 +1,5 @@
 #include "container.h"
+#include "conf.h"
 
 #include <iostream>
 #include <string>
